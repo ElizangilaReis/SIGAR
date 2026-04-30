@@ -1,18 +1,34 @@
 import { useState } from "react";
-import { login } from "../services/auth";
+import { login, getRole } from "../services/auth";
 import "./Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
+
     try {
       await login(email, password);
-      window.location.href = "/dashboard";
-    } catch {
-      alert("Credenciais inválidas");
+
+      const role = getRole();
+
+      // 🔥 Redirecionamento inteligente
+      if (role === "admin") {
+        window.location.href = "/admin";
+      } else if (role === "parceiro") {
+        window.location.href = "/parceiro";
+      } else {
+        window.location.href = "/dashboard";
+      }
+
+    } catch (error) {
+      alert(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -20,7 +36,9 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box">
         <h2>SIGAR</h2>
-        <p>PLATAFORMA WEB DE AUTO-ATENDIMENTO ACADÉMICO PARA SOLICITAÇÃO DE DOCUMENTOS E PAGAMENTOS DIGITAIS </p>
+        <p>
+          PLATAFORMA WEB DE AUTO-ATENDIMENTO ACADÉMICO PARA SOLICITAÇÃO DE DOCUMENTOS E PAGAMENTOS DIGITAIS
+        </p>
 
         <form onSubmit={handleSubmit}>
           <input 
@@ -37,7 +55,9 @@ export default function Login() {
             required
           />
 
-          <button type="submit">Entrar</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
+          </button>
         </form>
       </div>
     </div>

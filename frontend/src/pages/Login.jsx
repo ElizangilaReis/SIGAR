@@ -19,8 +19,8 @@ export default function Login() {
       // 🔥 Redirecionamento inteligente
       if (role === "admin") {
         window.location.href = "/admin";
-      } else if (role === "parceiro") {
-        window.location.href = "/parceiro";
+      } else if (role === "employee") {
+        window.location.href = "/employee";
       } else {
         window.location.href = "/dashboard";
       }

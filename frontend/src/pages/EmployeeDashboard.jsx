@@ -1,6 +1,6 @@
 import { logout } from "../services/auth";
 
-export default function AdminDashboard() {
+export default function EmployeeDashboard() {
 
   function handleLogout() {
     logout();
@@ -10,33 +10,31 @@ export default function AdminDashboard() {
   return (
     <div style={styles.page}>
 
-      {/* HEADER */}
       <div style={styles.header}>
-        <h2>SIGAR — Administração</h2>
+        <h2>SIGAR — Funcionário</h2>
 
         <button style={styles.logoutBtn} onClick={handleLogout}>
           Sair
         </button>
       </div>
 
-      {/* CONTENT */}
       <div style={styles.container}>
 
-        <h1>Painel Administrativo</h1>
+        <h1>Painel do Funcionário</h1>
 
         <p>
-          Bem-vindo ao módulo administrativo do SIGAR.
+          Bem-vindo ao módulo de atendimento académico do SIGAR.
         </p>
 
         <div style={styles.card}>
           <h3>Funcionalidades</h3>
 
           <ul>
-            <li>Gestão de estudantes</li>
-            <li>Gestão de funcionários</li>
-            <li>Relatórios académicos</li>
-            <li>Gestão de pagamentos</li>
-            <li>Configurações do sistema</li>
+            <li>Gestão de solicitações</li>
+            <li>Validação de documentos</li>
+            <li>Atualização de estados</li>
+            <li>Atendimento académico</li>
+            <li>Consulta de pagamentos</li>
           </ul>
         </div>
 
@@ -54,7 +52,7 @@ const styles = {
   },
 
   header: {
-    background: "#1e293b",
+    background: "#059669",
     color: "#fff",
     padding: "20px 40px",
     display: "flex",

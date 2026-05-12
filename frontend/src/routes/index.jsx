@@ -2,12 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
+import AdminDashboard from "../pages/AdminDashboard";
+import EmployeeDashboard from "../pages/EmployeeDashboard";
+
 import PrivateRoute from "./PrivateRoute";
 import RoleRoute from "./RoleRoute";
-
-// (cria depois esses dashboards)
-import AdminDashboard from "../pages/AdminDashboard";
-import ParceiroDashboard from "../pages/ParceiroDashboard";
 
 export default function AppRoutes() {
   return (
@@ -17,12 +16,12 @@ export default function AppRoutes() {
         {/* LOGIN */}
         <Route path="/login" element={<Login />} />
 
-        {/* ESTUDANTE */}
+        {/* STUDENT */}
         <Route
           path="/dashboard"
           element={
             <PrivateRoute>
-              <RoleRoute allowedRoles={["estudante"]}>
+              <RoleRoute allowedRoles={["student"]}>
                 <Dashboard />
               </RoleRoute>
             </PrivateRoute>
@@ -41,13 +40,13 @@ export default function AppRoutes() {
           }
         />
 
-        {/* PARCEIRO */}
+        {/* EMPLOYEE */}
         <Route
-          path="/parceiro"
+          path="/employee"
           element={
             <PrivateRoute>
-              <RoleRoute allowedRoles={["parceiro"]}>
-                <ParceiroDashboard />
+              <RoleRoute allowedRoles={["employee"]}>
+                <EmployeeDashboard />
               </RoleRoute>
             </PrivateRoute>
           }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,4 +23,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * Dados do estudante.
+     */
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
 }

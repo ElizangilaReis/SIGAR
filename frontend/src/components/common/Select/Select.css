@@ -1,0 +1,39 @@
+.select-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    margin-bottom:18px;
+
+}
+
+.select-group label{
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+    color:#334155;
+
+}
+
+.select-group select{
+
+    padding:12px;
+
+    border:1px solid #dbe2ea;
+
+    border-radius:8px;
+
+    outline:none;
+
+    font-size:15px;
+
+}
+
+.select-group select:focus{
+
+    border-color:#2563eb;
+
+}

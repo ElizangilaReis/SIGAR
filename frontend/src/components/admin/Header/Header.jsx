@@ -1,5 +1,5 @@
 import "./Header.css";
-import { logout, getUser } from "../../services/auth";
+import { logout, getUser } from "../../../services/auth";
 
 export default function Header() {
   const user = getUser();

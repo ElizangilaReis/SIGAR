@@ -1,5 +1,5 @@
 import "./Sidebar.css";
-import MenuItem from "./MenuItem";
+import MenuItem from "../../common/MenuItem/MenuItem";
 
 import {
   FaHome,

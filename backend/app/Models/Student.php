@@ -10,26 +10,28 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'student_number',
-        'bi',
-        'phone',
-        'birth_date',
-        'gender',
-        'faculty',
-        'course',
-        'status',
-    ];
 
-    protected $casts = [
-        'birth_date' => 'date',
+        'user_id',
+
+        'student_number',
+
+        'course_id',
+
     ];
 
     /**
-     * Utilizador associado ao estudante.
+     * Utilizador.
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Curso.
+     */
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
     }
 }

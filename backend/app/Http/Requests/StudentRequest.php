@@ -6,28 +6,30 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StudentRequest extends FormRequest
 {
-    /**
-     * Autoriza a requisição.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Regras de validação.
-     */
     public function rules(): array
     {
+        $student = $this->route('student');
+
+        $userId = $student?->user_id;
+
         return [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Dados do Utilizador
+            |--------------------------------------------------------------------------
+            */
 
             'name' => 'required|string|max:255',
 
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:users,email,' . $userId,
 
-            'student_number' => 'required|string|max:30|unique:students,student_number',
-
-            'bi' => 'required|string|max:20|unique:students,bi',
+            'bi' => 'required|string|max:20|unique:users,bi,' . $userId,
 
             'phone' => 'nullable|string|max:20',
 
@@ -35,18 +37,21 @@ class StudentRequest extends FormRequest
 
             'gender' => 'nullable|in:Masculino,Feminino',
 
-            'faculty' => 'required|string|max:150',
+            'status' => 'required|in:Activo,Inactivo',
 
-            'course' => 'required|string|max:150',
+            /*
+            |--------------------------------------------------------------------------
+            | Dados Académicos
+            |--------------------------------------------------------------------------
+            */
 
-            'status' => 'nullable|in:Activo,Inactivo',
+            'student_number' => 'required|string|max:30|unique:students,student_number,' . ($student?->id),
+
+            'course_id' => 'required|exists:courses,id',
 
         ];
     }
 
-    /**
-     * Mensagens personalizadas.
-     */
     public function messages(): array
     {
         return [
@@ -55,21 +60,21 @@ class StudentRequest extends FormRequest
 
             'email.required' => 'O email é obrigatório.',
 
-            'email.email' => 'O email informado é inválido.',
+            'email.email' => 'O email é inválido.',
 
             'email.unique' => 'Já existe um utilizador com este email.',
 
+            'bi.required' => 'O BI é obrigatório.',
+
+            'bi.unique' => 'Já existe um utilizador com este BI.',
+
             'student_number.required' => 'O número de estudante é obrigatório.',
 
-            'student_number.unique' => 'Este número de estudante já existe.',
+            'student_number.unique' => 'Já existe um estudante com este número.',
 
-            'bi.required' => 'O número do BI é obrigatório.',
+            'course_id.required' => 'O curso é obrigatório.',
 
-            'bi.unique' => 'Já existe um estudante com este BI.',
-
-            'faculty.required' => 'A faculdade é obrigatória.',
-
-            'course.required' => 'O curso é obrigatório.',
+            'course_id.exists' => 'O curso seleccionado é inválido.',
 
         ];
     }

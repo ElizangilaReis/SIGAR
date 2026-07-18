@@ -63,8 +63,8 @@ class User extends Authenticatable
     /**
      * Dados do funcionário.
      */
-   // public function employee()
-    //{
-     //   return $this->hasOne(Employee::class);
-  //  }
+    public function employee()
+    {
+       return $this->hasOne(Employee::class);
+    }
 }

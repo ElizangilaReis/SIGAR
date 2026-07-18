@@ -1,0 +1,49 @@
+.textarea-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    margin-bottom:16px;
+
+}
+
+.textarea-group label{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#374151;
+
+}
+
+.textarea-group textarea{
+
+    width:100%;
+
+    min-height:110px;
+
+    padding:10px 14px;
+
+    border:1px solid #D1D5DB;
+
+    border-radius:8px;
+
+    font-size:14px;
+
+    resize:vertical;
+
+    outline:none;
+
+    transition:.2s;
+
+}
+
+.textarea-group textarea:focus{
+
+    border-color:#2563EB;
+
+}

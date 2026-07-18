@@ -8,8 +8,8 @@ import AdminLayout from "../layouts/AdminLayout";
 
 import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
 import Students from "../pages/admin/students/Students";
-//import Employees from "../pages/admin/employees/Employees";
-//import Documents from "../pages/admin/documents/Documents";
+import Employees from "../pages/admin/employees/Employees";
+import Documents from "../pages/admin/documents/Documents";
 //import Payments from "../pages/admin/payments/Payments";
 import Reports from "../pages/admin/reports/Reports";
 import Settings from "../pages/admin/settings/Settings";
@@ -64,11 +64,11 @@ export default function AppRoutes() {
 
                     <Route path="students" element={<Students />} />
 
-                    {/*<Route path="employees" element={<Employees />} />
+                    <Route path="employees" element={<Employees />} />
 
                     <Route path="documents" element={<Documents />} />
 
-                    <Route path="payments" element={<Payments />} />
+                    {/*<Route path="payments" element={<Payments />} />
 
                     <Route path="reports" element={<Reports />} />
 

@@ -45,8 +45,8 @@ class StudentRequest extends FormRequest
             |--------------------------------------------------------------------------
             */
 
-            'student_number' => 'required|string|max:30|unique:students,student_number,' . ($student?->id),
-
+            'student_number' => 'nullable',
+            
             'course_id' => 'required|exists:courses,id',
 
         ];

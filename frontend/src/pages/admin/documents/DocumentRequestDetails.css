@@ -1,0 +1,53 @@
+.details-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+}
+
+.detail-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+}
+
+.detail-item strong{
+
+    color:#555;
+
+    font-size:14px;
+
+}
+
+.detail-item p{
+
+    margin:0;
+
+    color:#222;
+
+    font-size:15px;
+
+}
+
+.full-width{
+
+    grid-column:1 / -1;
+
+}
+
+@media(max-width:768px){
+
+    .details-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

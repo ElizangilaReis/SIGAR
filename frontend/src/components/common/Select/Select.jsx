@@ -3,70 +3,43 @@ import "./Select.css";
 export default function Select({
 
     label,
-
     value,
-
     onChange,
-
     name,
+    options = [],
+    required = false,
+    disabled = false
 
-    options=[],
+}) {
 
-    required=false
-
-}){
-
-    return(
+    return (
 
         <div className="select-group">
 
-            {label &&
-
-                <label>
-
-                    {label}
-
-                </label>
-
-            }
+            {label && <label>{label}</label>}
 
             <select
-
                 name={name}
-
                 value={value}
-
                 onChange={onChange}
-
                 required={required}
-
+                disabled={disabled}
             >
 
                 <option value="">
-
                     Selecione...
-
                 </option>
 
-                {
+                {options.map(option => (
 
-                    options.map(option=>(
+                    <option
+                        key={option.value}
+                        value={option.value}
+                    >
+                        {option.label}
+                    </option>
 
-                        <option
-
-                            key={option.value}
-
-                            value={option.value}
-
-                        >
-
-                            {option.label}
-
-                        </option>
-
-                    ))
-
-                }
+                ))}
 
             </select>
 

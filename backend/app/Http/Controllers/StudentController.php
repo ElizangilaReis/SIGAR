@@ -41,6 +41,13 @@ class StudentController extends Controller
 
             DB::beginTransaction();
 
+            // Gerar número automático do estudante
+            $lastStudent = Student::latest('id')->first();
+
+            $nextNumber = $lastStudent ? $lastStudent->id + 1 : 1;
+
+            $studentNumber = 'EST' . date('Y') . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
             // Criar utilizador
             $user = User::create([
 
@@ -64,12 +71,19 @@ class StudentController extends Controller
 
             ]);
 
+            // Gerar número automático
+            $lastStudent = Student::latest('id')->first();
+
+            $nextNumber = $lastStudent ? $lastStudent->id + 1 : 1;
+
+            $studentNumber = 'EST' . date('Y') . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
             // Criar estudante
-            $student = Student::create([
+           $student = Student::create([
 
                 'user_id' => $user->id,
 
-                'student_number' => $request->student_number,
+                'student_number' => $studentNumber,
 
                 'course_id' => $request->course_id,
 
@@ -154,8 +168,6 @@ class StudentController extends Controller
 
             // Actualizar estudante
             $student->update([
-
-                'student_number' => $request->student_number,
 
                 'course_id' => $request->course_id,
 

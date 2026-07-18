@@ -187,14 +187,6 @@ export default function StudentForm({
                 />
 
                 <Input
-                    label="Número de estudante"
-                    name="student_number"
-                    value={form.student_number}
-                    onChange={handleChange}
-                    required
-                />
-
-                <Input
                     label="BI"
                     name="bi"
                     value={form.bi}

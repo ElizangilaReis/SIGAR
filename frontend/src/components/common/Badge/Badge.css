@@ -1,6 +1,10 @@
 .badge{
 
-    display:inline-block;
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
 
     padding:6px 12px;
 
@@ -12,34 +16,50 @@
 
 }
 
-.badge-success{
+.badge.warning{
 
-    background:#dcfce7;
+    background:#FFF4CC;
 
-    color:#166534;
-
-}
-
-.badge-danger{
-
-    background:#fee2e2;
-
-    color:#991b1b;
+    color:#B8860B;
 
 }
 
-.badge-warning{
+.badge.info{
 
-    background:#fef3c7;
+    background:#D6ECFF;
 
-    color:#92400e;
+    color:#0A66C2;
 
 }
 
-.badge-info{
+.badge.success{
 
-    background:#dbeafe;
+    background:#DCFCE7;
 
-    color:#1d4ed8;
+    color:#15803D;
+
+}
+
+.badge.primary{
+
+    background:#DCEBFF;
+
+    color:#1D4ED8;
+
+}
+
+.badge.danger{
+
+    background:#FEE2E2;
+
+    color:#B91C1C;
+
+}
+
+.badge.default{
+
+    background:#EEEEEE;
+
+    color:#555;
 
 }

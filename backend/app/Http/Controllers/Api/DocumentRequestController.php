@@ -126,60 +126,96 @@ class DocumentRequestController extends Controller
      * Actualizar pedido.
      */
     public function update(
-        UpdateDocumentRequestRequest $request,
-        DocumentRequest $documentRequest
-    ): JsonResponse
-    {
-        try {
+    UpdateDocumentRequestRequest $request,
+    DocumentRequest $documentRequest
+): JsonResponse
+{
+    try {
 
-            $data = $request->validated();
+        $data = $request->validated();
 
-            if ($request->status === 'Pronto') {
+        /*
+        |--------------------------------------------------------------------------
+        | Datas automáticas conforme o estado
+        |--------------------------------------------------------------------------
+        */
 
-                $data['completed_at'] = now();
+        if (
+            $data['status'] === 'Pronto' &&
+            !$documentRequest->completed_at
+        ) {
 
-            }
-
-            if ($request->status === 'Entregue') {
-
-                $data['delivered_at'] = now();
-
-            }
-
-            $documentRequest->update($data);
-
-            $documentRequest->load([
-
-                'student.user',
-                'documentType',
-                'employee.user'
-
-            ]);
-
-            return response()->json([
-
-                'success' => true,
-
-                'message' => 'Pedido actualizado com sucesso.',
-
-                'data' => new DocumentRequestResource($documentRequest)
-
-            ]);
-
-        } catch (\Exception $e) {
-
-            return response()->json([
-
-                'success' => false,
-
-                'message' => 'Erro ao actualizar pedido.',
-
-                'error' => $e->getMessage()
-
-            ], 500);
+            $data['completed_at'] = now();
 
         }
+
+        if (
+            $data['status'] === 'Entregue' &&
+            !$documentRequest->delivered_at
+        ) {
+
+            $data['delivered_at'] = now();
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Actualizar pedido
+        |--------------------------------------------------------------------------
+        */
+
+        $documentRequest->update([
+
+            'student_id'       => $data['student_id'],
+
+            'document_type_id' => $data['document_type_id'],
+
+            'employee_id'      => $data['employee_id'] ?? null,
+
+            'status'           => $data['status'],
+
+            'observations'     => $data['observations'] ?? null,
+
+            'completed_at'     => $data['completed_at'] ?? $documentRequest->completed_at,
+
+            'delivered_at'     => $data['delivered_at'] ?? $documentRequest->delivered_at,
+
+        ]);
+
+        $documentRequest->load([
+
+            'student.user',
+
+            'documentType',
+
+            'employee.user'
+
+        ]);
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Pedido actualizado com sucesso.',
+
+            'data' => new DocumentRequestResource($documentRequest)
+
+        ]);
+
+    } catch (\Exception $e) {
+
+        return response()->json([
+
+            'success' => false,
+
+            'message' => 'Erro ao actualizar pedido.',
+
+            'error' => $e->getMessage()
+
+        ], 500);
+
     }
+}
 
     /**
      * Eliminar pedido.

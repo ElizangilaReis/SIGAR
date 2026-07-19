@@ -6,6 +6,7 @@ import Button from "../../../components/common/Button/Button";
 import TextArea from "../../../components/common/TextArea/TextArea";
 
 import studentService from "../../../services/studentService";
+import employeeService from "../../../services/employeeService";
 import documentTypeService from "../../../services/documentTypeService";
 import documentRequestService from "../../../services/documentRequestService";
 
@@ -22,6 +23,8 @@ export default function DocumentRequestForm({
 
     const [students, setStudents] = useState([]);
 
+    const [employees, setEmployees] = useState([]);
+
     const [documentTypes, setDocumentTypes] = useState([]);
 
     const [form, setForm] = useState({
@@ -29,6 +32,10 @@ export default function DocumentRequestForm({
         student_id: "",
 
         document_type_id: "",
+
+        employee_id: "",
+
+        status: "Pendente",
 
         observations: ""
 
@@ -54,6 +61,10 @@ export default function DocumentRequestForm({
 
                 document_type_id: request.document_type?.id || "",
 
+                employee_id: request.employee?.id || "",
+
+                status: request.status || "Pendente",
+
                 observations: request.observations || ""
 
             });
@@ -66,6 +77,10 @@ export default function DocumentRequestForm({
 
                 document_type_id: "",
 
+                employee_id: "",
+
+                status: "Pendente",
+
                 observations: ""
 
             });
@@ -76,41 +91,39 @@ export default function DocumentRequestForm({
 
     async function loadData() {
 
-        try {
+    try {
 
-            const [
+        const [
 
-                studentsResponse,
+            students,
 
-                documentTypesResponse
+            employees,
 
-            ] = await Promise.all([
+            documentTypes
 
-                studentService.getAll(),
+        ] = await Promise.all([
 
-                documentTypeService.getAll()
+            studentService.getAll(),
 
-            ]);
+            employeeService.getAll(),
 
-            setStudents(
+            documentTypeService.getAll()
 
-                studentsResponse.data.data || []
+        ]);
 
-            );
+        setStudents(students);
 
-            setDocumentTypes(
+        setEmployees(employees);
 
-                documentTypesResponse.data.data || []
+        setDocumentTypes(documentTypes);
 
-            );
+    } catch (error) {
 
-        } catch (error) {
-
-            console.error(error);
-
-        }
+        console.error(error);
 
     }
+
+}
 
     function handleChange(e) {
 
@@ -154,7 +167,7 @@ export default function DocumentRequestForm({
 
         } catch (error) {
 
-            console.error(error);
+            console.error(error.response?.data);
 
         } finally {
 
@@ -175,6 +188,18 @@ export default function DocumentRequestForm({
         }));
 
     }, [students]);
+
+    const employeeOptions = useMemo(() => {
+
+        return employees.map(employee => ({
+
+            value: employee.id,
+
+            label: `${employee.employee_number} - ${employee.user?.name}`
+
+        }));
+
+    }, [employees]);
 
     const documentTypeOptions = useMemo(() => {
 
@@ -275,6 +300,78 @@ export default function DocumentRequestForm({
                     onChange={handleChange}
 
                     options={documentTypeOptions}
+
+                    required
+
+                />
+
+                <Select
+
+                    label="Funcionário Responsável"
+
+                    name="employee_id"
+
+                    value={form.employee_id}
+
+                    onChange={handleChange}
+
+                    options={employeeOptions}
+
+                />
+
+                <Select
+
+                    label="Estado"
+
+                    name="status"
+
+                    value={form.status}
+
+                    onChange={handleChange}
+
+                    options={[
+
+                        {
+
+                            value: "Pendente",
+
+                            label: "Pendente"
+
+                        },
+
+                        {
+
+                            value: "Em Processamento",
+
+                            label: "Em Processamento"
+
+                        },
+
+                        {
+
+                            value: "Pronto",
+
+                            label: "Pronto"
+
+                        },
+
+                        {
+
+                            value: "Entregue",
+
+                            label: "Entregue"
+
+                        },
+
+                        {
+
+                            value: "Cancelado",
+
+                            label: "Cancelado"
+
+                        }
+
+                    ]}
 
                     required
 

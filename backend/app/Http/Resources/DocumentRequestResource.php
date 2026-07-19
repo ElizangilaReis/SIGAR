@@ -34,7 +34,15 @@ class DocumentRequestResource extends JsonResource
 
                 'student_number' => $this->student?->student_number,
 
-                'name' => $this->student?->user?->name,
+                'user' => [
+
+                    'id' => $this->student?->user?->id,
+
+                    'name' => $this->student?->user?->name,
+
+                    'email' => $this->student?->user?->email,
+
+                ],
 
             ],
 
@@ -46,13 +54,25 @@ class DocumentRequestResource extends JsonResource
 
                 'price' => $this->documentType?->price,
 
+                'processing_days' => $this->documentType?->processing_days,
+
             ],
 
             'employee' => $this->employee ? [
 
                 'id' => $this->employee->id,
 
-                'name' => $this->employee->user?->name,
+                'employee_number' => $this->employee->employee_number,
+
+                'user' => [
+
+                    'id' => $this->employee->user?->id,
+
+                    'name' => $this->employee->user?->name,
+
+                    'email' => $this->employee->user?->email,
+
+                ],
 
             ] : null,
 

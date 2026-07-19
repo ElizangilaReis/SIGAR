@@ -15,7 +15,6 @@ import DocumentRequestDetails from "./DocumentRequestDetails";
 export default function DocumentRequests() {
 
     const [requests, setRequests] = useState([]);
-
     const [loading, setLoading] = useState(false);
 
     const [search, setSearch] = useState("");
@@ -25,7 +24,6 @@ export default function DocumentRequests() {
     const perPage = 10;
 
     const [openForm, setOpenForm] = useState(false);
-
     const [openDetails, setOpenDetails] = useState(false);
 
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -62,25 +60,21 @@ export default function DocumentRequests() {
 
         if (!search) return requests;
 
-        return requests.filter(request => {
+        const value = search.toLowerCase();
 
-            const value = search.toLowerCase();
+        return requests.filter(request =>
 
-            return (
+            request.reference?.toLowerCase().includes(value) ||
 
-                request.reference?.toLowerCase().includes(value) ||
+            request.student?.name?.toLowerCase().includes(value) ||
 
-                request.student?.name?.toLowerCase().includes(value) ||
+            request.student?.student_number?.toLowerCase().includes(value) ||
 
-                request.student?.student_number?.toLowerCase().includes(value) ||
+            request.document_type?.name?.toLowerCase().includes(value) ||
 
-                request.document_type?.name?.toLowerCase().includes(value) ||
+            request.status?.toLowerCase().includes(value)
 
-                request.status?.toLowerCase().includes(value)
-
-            );
-
-        });
+        );
 
     }, [requests, search]);
 
@@ -90,21 +84,9 @@ export default function DocumentRequests() {
 
         const start = (page - 1) * perPage;
 
-        return filteredRequests.slice(
+        return filteredRequests.slice(start, start + perPage);
 
-            start,
-
-            start + perPage
-
-        );
-
-    }, [
-
-        filteredRequests,
-
-        page
-
-    ]);
+    }, [filteredRequests, page]);
 
     if (loading) {
 
@@ -162,65 +144,114 @@ export default function DocumentRequests() {
 
                 ]}
 
-                data={paginatedRequests}
+            >
 
-                renderRow={(request) => (
+                {
 
-                    <tr key={request.id}>
+                    paginatedRequests.length > 0 ? (
 
-                        <td>{request.reference}</td>
+                        paginatedRequests.map((request) => (
 
-                        <td>{request.student?.name}</td>
+                            <tr key={request.id}>
 
-                        <td>{request.document_type?.name}</td>
+                                <td>{request.reference}</td>
 
-                        <td>{request.status}</td>
+                                <td>{request.student?.name}</td>
 
-                        <td>{request.requested_at}</td>
+                                <td>{request.document_type?.name}</td>
 
-                        <td>
+                                <td>{request.status}</td>
 
-                            <Button
+                                <td>
 
-                                variant="secondary"
+                                    {
 
-                                onClick={() => {
+                                        request.requested_at
 
-                                    setSelectedRequest(request);
+                                            ? new Date(request.requested_at).toLocaleDateString("pt-PT")
 
-                                    setOpenDetails(true);
+                                            : "-"
+
+                                    }
+
+                                </td>
+
+                                <td
+                                    style={{
+                                        display: "flex",
+                                        gap: "8px"
+                                    }}
+                                >
+
+                                    <Button
+
+                                        variant="secondary"
+
+                                        onClick={() => {
+
+                                            setSelectedRequest(request);
+
+                                            setOpenDetails(true);
+
+                                        }}
+
+                                    >
+
+                                        Ver
+
+                                    </Button>
+
+                                    <Button
+
+                                        onClick={() => {
+
+                                            setSelectedRequest(request);
+
+                                            setOpenForm(true);
+
+                                        }}
+
+                                    >
+
+                                        Editar
+
+                                    </Button>
+
+                                </td>
+
+                            </tr>
+
+                        ))
+
+                    ) : (
+
+                        <tr>
+
+                            <td
+
+                                colSpan={6}
+
+                                style={{
+
+                                    textAlign: "center",
+
+                                    padding: "20px"
 
                                 }}
 
                             >
 
-                                Ver
+                                Nenhum pedido encontrado.
 
-                            </Button>
+                            </td>
 
-                            <Button
+                        </tr>
 
-                                onClick={() => {
+                    )
 
-                                    setSelectedRequest(request);
+                }
 
-                                    setOpenForm(true);
-
-                                }}
-
-                            >
-
-                                Editar
-
-                            </Button>
-
-                        </td>
-
-                    </tr>
-
-                )}
-
-            />
+            </Table>
 
             <Pagination
 

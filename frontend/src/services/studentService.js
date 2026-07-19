@@ -4,15 +4,13 @@ const studentService = {
 
     getAll() {
 
-        return api.get("/students")
-            .then(res => res.data.data);
+        return api.get("/students");
 
     },
 
     get(id) {
 
-        return api.get(`/students/${id}`)
-            .then(res => res.data.data);
+        return api.get(`/students/${id}`);
 
     },
 

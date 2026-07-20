@@ -39,4 +39,12 @@ class Student extends Model
     {
         return $this->hasMany(DocumentRequest::class);
     }
+
+    /**
+     * Pagamentos do estudante.
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

@@ -4,13 +4,15 @@ const documentRequestService = {
 
     getAll() {
 
-        return api.get("/document-requests");
+        return api.get("/document-requests")
+            .then(res => res.data.data);
 
     },
 
     getById(id) {
 
-        return api.get(`/document-requests/${id}`);
+        return api.get(`/document-requests/${id}`)
+            .then(res => res.data.data);
 
     },
 

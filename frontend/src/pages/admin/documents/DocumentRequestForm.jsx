@@ -91,39 +91,45 @@ export default function DocumentRequestForm({
 
     async function loadData() {
 
-    try {
+        try {
 
-        const [
+            const [
 
-            students,
+                students,
 
-            employees,
+                employees,
 
-            documentTypes
+                documentTypes
 
-        ] = await Promise.all([
+            ] = await Promise.all([
 
-            studentService.getAll(),
+                studentService.getAll(),
 
-            employeeService.getAll(),
+                employeeService.getAll(),
 
-            documentTypeService.getAll()
+                documentTypeService.getAll()
 
-        ]);
+            ]);
 
-        setStudents(students);
+            setStudents(Array.isArray(students) ? students : []);
 
-        setEmployees(employees);
+            setEmployees(Array.isArray(employees) ? employees : []);
 
-        setDocumentTypes(documentTypes);
+            setDocumentTypes(Array.isArray(documentTypes) ? documentTypes : []);
 
-    } catch (error) {
+        } catch (error) {
 
-        console.error(error);
+            console.error(error.response?.data || error);
+
+            setStudents([]);
+
+            setEmployees([]);
+
+            setDocumentTypes([]);
+
+        }
 
     }
-
-}
 
     function handleChange(e) {
 
@@ -167,7 +173,7 @@ export default function DocumentRequestForm({
 
         } catch (error) {
 
-            console.error(error.response?.data);
+            console.error(error.response?.data || error);
 
         } finally {
 
@@ -179,7 +185,7 @@ export default function DocumentRequestForm({
 
     const studentOptions = useMemo(() => {
 
-        return students.map(student => ({
+        return (students || []).map(student => ({
 
             value: student.id,
 
@@ -191,7 +197,7 @@ export default function DocumentRequestForm({
 
     const employeeOptions = useMemo(() => {
 
-        return employees.map(employee => ({
+        return (employees || []).map(employee => ({
 
             value: employee.id,
 
@@ -203,7 +209,7 @@ export default function DocumentRequestForm({
 
     const documentTypeOptions = useMemo(() => {
 
-        return documentTypes.map(document => ({
+        return (documentTypes || []).map(document => ({
 
             value: document.id,
 

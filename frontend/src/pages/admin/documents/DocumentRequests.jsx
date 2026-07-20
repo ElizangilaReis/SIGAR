@@ -15,6 +15,7 @@ import DocumentRequestDetails from "./DocumentRequestDetails";
 export default function DocumentRequests() {
 
     const [requests, setRequests] = useState([]);
+
     const [loading, setLoading] = useState(false);
 
     const [search, setSearch] = useState("");
@@ -24,6 +25,7 @@ export default function DocumentRequests() {
     const perPage = 10;
 
     const [openForm, setOpenForm] = useState(false);
+
     const [openDetails, setOpenDetails] = useState(false);
 
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -40,13 +42,15 @@ export default function DocumentRequests() {
 
             setLoading(true);
 
-            const response = await documentRequestService.getAll();
+            const requests = await documentRequestService.getAll();
 
-            setRequests(response.data.data || []);
+            setRequests(Array.isArray(requests) ? requests : []);
 
         } catch (error) {
 
-            console.error(error);
+            console.error(error.response?.data || error);
+
+            setRequests([]);
 
         } finally {
 
@@ -64,13 +68,21 @@ export default function DocumentRequests() {
 
         return requests.filter(request =>
 
-            request.reference?.toLowerCase().includes(value) ||
+            request.reference?.toLowerCase().includes(value)
 
-            request.student?.name?.toLowerCase().includes(value) ||
+            ||
 
-            request.student?.student_number?.toLowerCase().includes(value) ||
+            request.student?.user?.name?.toLowerCase().includes(value)
 
-            request.document_type?.name?.toLowerCase().includes(value) ||
+            ||
+
+            request.student?.student_number?.toLowerCase().includes(value)
+
+            ||
+
+            request.document_type?.name?.toLowerCase().includes(value)
+
+            ||
 
             request.status?.toLowerCase().includes(value)
 
@@ -136,6 +148,8 @@ export default function DocumentRequests() {
 
                     "Documento",
 
+                    "Funcionário",
+
                     "Estado",
 
                     "Data",
@@ -148,19 +162,43 @@ export default function DocumentRequests() {
 
                 {
 
-                    paginatedRequests.length > 0 ? (
+                    paginatedRequests.length > 0
 
-                        paginatedRequests.map((request) => (
+                        ?
+
+                        paginatedRequests.map(request => (
 
                             <tr key={request.id}>
 
-                                <td>{request.reference}</td>
+                                <td>
 
-                                <td>{request.student?.name}</td>
+                                    {request.reference || "-"}
 
-                                <td>{request.document_type?.name}</td>
+                                </td>
 
-                                <td>{request.status}</td>
+                                <td>
+
+                                    {request.student?.user?.name || "-"}
+
+                                </td>
+
+                                <td>
+
+                                    {request.document_type?.name || "-"}
+
+                                </td>
+
+                                <td>
+
+                                    {request.employee?.user?.name || "-"}
+
+                                </td>
+
+                                <td>
+
+                                    {request.status}
+
+                                </td>
 
                                 <td>
 
@@ -168,19 +206,32 @@ export default function DocumentRequests() {
 
                                         request.requested_at
 
-                                            ? new Date(request.requested_at).toLocaleDateString("pt-PT")
+                                            ?
 
-                                            : "-"
+                                            new Date(
+
+                                                request.requested_at
+
+                                            ).toLocaleDateString("pt-PT")
+
+                                            :
+
+                                            "-"
 
                                     }
 
                                 </td>
 
                                 <td
+
                                     style={{
+
                                         display: "flex",
+
                                         gap: "8px"
+
                                     }}
+
                                 >
 
                                     <Button
@@ -223,31 +274,33 @@ export default function DocumentRequests() {
 
                         ))
 
-                    ) : (
+                        :
 
-                        <tr>
+                        (
 
-                            <td
+                            <tr>
 
-                                colSpan={6}
+                                <td
 
-                                style={{
+                                    colSpan={7}
 
-                                    textAlign: "center",
+                                    style={{
 
-                                    padding: "20px"
+                                        textAlign: "center",
 
-                                }}
+                                        padding: "20px"
 
-                            >
+                                    }}
 
-                                Nenhum pedido encontrado.
+                                >
 
-                            </td>
+                                    Nenhum pedido encontrado.
 
-                        </tr>
+                                </td>
 
-                    )
+                            </tr>
+
+                        )
 
                 }
 

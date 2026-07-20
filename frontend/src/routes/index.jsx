@@ -10,7 +10,7 @@ import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
 import Students from "../pages/admin/students/Students";
 import Employees from "../pages/admin/employees/Employees";
 import Documents from "../pages/admin/documents/Documents";
-//import Payments from "../pages/admin/payments/Payments";
+import Payments from "../pages/admin/payments/Payments";
 import Reports from "../pages/admin/reports/Reports";
 import Settings from "../pages/admin/settings/Settings";
 
@@ -68,11 +68,11 @@ export default function AppRoutes() {
 
                     <Route path="documents" element={<Documents />} />
 
-                    {/*<Route path="payments" element={<Payments />} />
+                    <Route path="payments" element={<Payments />} />
 
                     <Route path="reports" element={<Reports />} />
 
-                    <Route path="settings" element={<Settings />} /> */}
+                    <Route path="settings" element={<Settings />} /> 
 
                 </Route>
 

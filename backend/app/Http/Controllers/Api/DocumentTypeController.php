@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateDocumentTypeRequest;
 use App\Http\Resources\DocumentTypeResource;
 use App\Models\DocumentType;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DocumentTypeController extends Controller
 {
@@ -156,5 +157,22 @@ class DocumentTypeController extends Controller
             ], 500);
 
         }
+    }
+
+    public function changeStatus(Request $request, DocumentType $documentType)
+    {
+        $request->validate([
+            'active' => 'required|boolean'
+        ]);
+
+        $documentType->update([
+            'active' => $request->active
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado actualizado com sucesso.',
+            'data' => new DocumentTypeResource($documentType)
+        ]);
     }
 }

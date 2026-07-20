@@ -44,21 +44,13 @@ export default function DocumentTypes() {
 
             setLoading(true);
 
-            const response = await documentTypeService.getAll();
+            const documentTypes = await documentTypeService.getAll();
 
-            setDocumentTypes(
-
-                response.data?.data ??
-
-                response.data ??
-
-                []
-
-            );
+            setDocumentTypes(documentTypes);
 
         } catch (error) {
 
-            console.error(error);
+            console.error(error.response?.data || error);
 
             alert("Erro ao carregar documentos.");
 
@@ -100,7 +92,7 @@ export default function DocumentTypes() {
 
         } catch (error) {
 
-            console.error(error);
+            console.error(error.response?.data || error);
 
             alert("Erro ao guardar documento.");
 
@@ -113,6 +105,8 @@ export default function DocumentTypes() {
     }
 
     async function handleChangeStatus(document, active) {
+
+        if (!document) return;
 
         try {
 
@@ -128,9 +122,13 @@ export default function DocumentTypes() {
 
             await loadData();
 
+            setConfirmOpen(false);
+
+            setDocumentDelete(null);
+
         } catch (error) {
 
-            console.error(error);
+            console.error(error.response?.data || error);
 
             alert("Erro ao alterar estado.");
 
@@ -394,17 +392,21 @@ export default function DocumentTypes() {
 
                 }}
 
-                onConfirm={() =>
+                onConfirm={() => {
 
-                    handleChangeStatus(
+                    if (documentDelete) {
 
-                        documentDelete,
+                        handleChangeStatus(
 
-                        false
+                            documentDelete,
 
-                    )
+                            false
 
-                }
+                        );
+
+                    }
+
+                }}
 
                 title="Desactivar Documento"
 

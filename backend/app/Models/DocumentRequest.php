@@ -44,4 +44,12 @@ class DocumentRequest extends Model
     {
         return $this->belongsTo(DocumentType::class);
     }
+
+    /**
+     * Pagamento associado.
+     */
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
 }

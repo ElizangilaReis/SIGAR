@@ -27,7 +27,7 @@ class UpdateDocumentTypeRequest extends FormRequest
                 'max:50',
 
                 Rule::unique('document_types', 'code')
-                    ->ignore($this->route('documentType'))
+                    ->ignore($this->route('document_type'))
 
             ],
 

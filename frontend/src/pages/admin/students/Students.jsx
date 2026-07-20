@@ -46,49 +46,62 @@ export default function Students() {
 
     }, []);
 
+   
     async function loadData() {
 
-        try {
+    try {
 
-            setLoading(true);
+        setLoading(true);
 
-            const [
+        const [
 
-                studentsResponse,
+            students,
 
-                facultiesResponse,
+            faculties,
 
-                coursesResponse
+            courses
 
-            ] = await Promise.all([
+        ] = await Promise.all([
 
-                studentService.getAll(),
+            studentService.getAll(),
 
-                facultyService.getAll(),
+            facultyService.getAll(),
 
-                courseService.getAll()
+            courseService.getAll()
 
-            ]);
+        ]);
 
-            setStudents(studentsResponse.data ?? studentsResponse);
+        setStudents(
+            Array.isArray(students)
+                ? students
+                : students?.data?.data || students?.data || []
+        );
 
-            setFaculties(facultiesResponse.data ?? facultiesResponse);
+        setFaculties(
+            Array.isArray(faculties)
+                ? faculties
+                : faculties?.data?.data || faculties?.data || []
+        );
 
-            setCourses(coursesResponse.data ?? coursesResponse);
+        setCourses(
+            Array.isArray(courses)
+                ? courses
+                : courses?.data?.data || courses?.data || []
+        );
 
-        } catch (error) {
+    } catch (error) {
 
-            console.error(error);
+        console.error(error);
 
-            alert("Erro ao carregar os dados.");
+        alert("Erro ao carregar os dados.");
 
-        } finally {
+    } finally {
 
-            setLoading(false);
-
-        }
+        setLoading(false);
 
     }
+
+}
 
     async function handleSave(data) {
 

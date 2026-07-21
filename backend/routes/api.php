@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DocumentTypeController;
 use App\Http\Controllers\Api\DocumentRequestController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\SettingController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -120,5 +121,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/payments/excel', [ReportController::class, 'paymentsExcel']);
 
     });
-    
+
+    Route::get(
+        '/settings',
+        [SettingController::class,'index']
+    );
+
+    Route::put(
+        '/settings',
+        [SettingController::class,'update']
+    );
+
+    Route::post(
+        '/settings/logo',
+        [SettingController::class,'uploadLogo']
+    );
+
+    Route::get(
+        '/settings/backup',
+        [SettingController::class,'backup']
+    );
+        
 });

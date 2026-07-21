@@ -7,11 +7,16 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 
 class EmployeesExport implements FromCollection
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
     public function collection()
     {
-        return Employee::all();
+        return Employee::with([
+
+            'user',
+
+            'department',
+
+            'position'
+
+        ])->get();
     }
 }

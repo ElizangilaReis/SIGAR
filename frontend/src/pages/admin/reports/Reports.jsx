@@ -7,6 +7,7 @@ import Loading from "../../../components/common/Loading/Loading";
 
 import DashboardCards from "./DashboardCards";
 import DashboardCharts from "./DashboardCharts";
+import ReportActions from "./ReportActions";
 
 import StudentReport from "./StudentReport";
 import EmployeeReport from "./EmployeeReport";
@@ -19,9 +20,9 @@ export default function Reports() {
 
     const [loading, setLoading] = useState(true);
 
-    const [dashboard, setDashboard] = useState({});
+    const [dashboard, setDashboard] = useState(null);
 
-    const [charts, setCharts] = useState({});
+    const [charts, setCharts] = useState(null);
 
     const [activeTab, setActiveTab] = useState("students");
 
@@ -55,6 +56,10 @@ export default function Reports() {
 
             setCharts(charts);
 
+        } catch (error) {
+
+            console.error(error);
+
         } finally {
 
             setLoading(false);
@@ -81,17 +86,55 @@ export default function Reports() {
 
             />
 
-            <DashboardCards dashboard={dashboard} />
+            {
 
-            <DashboardCharts charts={charts} />
+                dashboard && (
+
+                    <DashboardCards
+
+                        dashboard={dashboard}
+
+                    />
+
+                )
+
+            }
+
+            {
+
+                charts && (
+
+                    <DashboardCharts
+
+                        charts={charts}
+
+                    />
+
+                )
+
+            }
+
+            <ReportActions />
 
             <div className="report-tabs">
 
                 <button
 
-                    className={activeTab === "students" ? "active" : ""}
+                    className={
 
-                    onClick={() => setActiveTab("students")}
+                        activeTab === "students"
+
+                            ? "active"
+
+                            : ""
+
+                    }
+
+                    onClick={() =>
+
+                        setActiveTab("students")
+
+                    }
 
                 >
 
@@ -101,9 +144,21 @@ export default function Reports() {
 
                 <button
 
-                    className={activeTab === "employees" ? "active" : ""}
+                    className={
 
-                    onClick={() => setActiveTab("employees")}
+                        activeTab === "employees"
+
+                            ? "active"
+
+                            : ""
+
+                    }
+
+                    onClick={() =>
+
+                        setActiveTab("employees")
+
+                    }
 
                 >
 
@@ -113,9 +168,21 @@ export default function Reports() {
 
                 <button
 
-                    className={activeTab === "requests" ? "active" : ""}
+                    className={
 
-                    onClick={() => setActiveTab("requests")}
+                        activeTab === "requests"
+
+                            ? "active"
+
+                            : ""
+
+                    }
+
+                    onClick={() =>
+
+                        setActiveTab("requests")
+
+                    }
 
                 >
 
@@ -125,9 +192,21 @@ export default function Reports() {
 
                 <button
 
-                    className={activeTab === "payments" ? "active" : ""}
+                    className={
 
-                    onClick={() => setActiveTab("payments")}
+                        activeTab === "payments"
+
+                            ? "active"
+
+                            : ""
+
+                    }
+
+                    onClick={() =>
+
+                        setActiveTab("payments")
+
+                    }
 
                 >
 
@@ -139,33 +218,41 @@ export default function Reports() {
 
             {
 
-                activeTab === "students" &&
+                activeTab === "students" && (
 
-                <StudentReport />
+                    <StudentReport />
 
-            }
-
-            {
-
-                activeTab === "employees" &&
-
-                <EmployeeReport />
+                )
 
             }
 
             {
 
-                activeTab === "requests" &&
+                activeTab === "employees" && (
 
-                <DocumentRequestReport />
+                    <EmployeeReport />
+
+                )
 
             }
 
             {
 
-                activeTab === "payments" &&
+                activeTab === "requests" && (
 
-                <PaymentReport />
+                    <DocumentRequestReport />
+
+                )
+
+            }
+
+            {
+
+                activeTab === "payments" && (
+
+                    <PaymentReport />
+
+                )
 
             }
 

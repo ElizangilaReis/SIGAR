@@ -8,6 +8,14 @@ use App\Models\Employee;
 use App\Models\DocumentRequest;
 use App\Models\Payment;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+
+use App\Exports\StudentsExport;
+use App\Exports\EmployeesExport;
+use App\Exports\DocumentRequestsExport;
+use App\Exports\PaymentsExport;
+
 class ReportController extends Controller
 {
     /**
@@ -260,4 +268,92 @@ class ReportController extends Controller
 
         ]);
     }
+
+    public function studentsPdf()
+{
+    $students = Student::with([
+        'user',
+        'course.faculty'
+    ])->get();
+
+    $pdf = Pdf::loadView(
+        'reports.students',
+        compact('students')
+    );
+
+    return $pdf->download('relatorio_estudantes.pdf');
+}
+
+public function employeesPdf()
+{
+    $employees = Employee::with([
+        'user',
+        'department',
+        'position'
+    ])->get();
+
+    $pdf = Pdf::loadView(
+        'reports.employees',
+        compact('employees')
+    );
+
+    return $pdf->download('relatorio_funcionarios.pdf');
+}
+
+public function documentRequestsPdf()
+{
+    $requests = DocumentRequest::with([
+        'student.user',
+        'documentType',
+        'employee.user'
+    ])->get();
+
+    $pdf = Pdf::loadView(
+        'reports.document_requests',
+        compact('requests')
+    );
+
+    return $pdf->download('relatorio_pedidos.pdf');
+}
+
+public function paymentsPdf()
+{
+    $payments = Payment::with([
+        'student.user',
+        'documentRequest.documentType'
+    ])->get();
+
+    $pdf = Pdf::loadView(
+        'reports.payments',
+        compact('payments')
+    );
+
+    return $pdf->download('relatorio_pagamentos.pdf');
+}
+
+public function employeesExcel()
+{
+    return Excel::download(
+        new EmployeesExport,
+        'funcionarios.xlsx'
+    );
+}
+
+public function documentRequestsExcel()
+{
+    return Excel::download(
+        new DocumentRequestsExport,
+        'pedidos.xlsx'
+    );
+}
+
+public function paymentsExcel()
+{
+    return Excel::download(
+        new PaymentsExport,
+        'pagamentos.xlsx'
+    );
+}
+
+
 }

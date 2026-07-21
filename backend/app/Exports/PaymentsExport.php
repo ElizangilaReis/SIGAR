@@ -7,11 +7,14 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 
 class PaymentsExport implements FromCollection
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
     public function collection()
     {
-        return Payment::all();
+        return Payment::with([
+
+            'student.user',
+
+            'documentRequest.documentType'
+
+        ])->get();
     }
 }

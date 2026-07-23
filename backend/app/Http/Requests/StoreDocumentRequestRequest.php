@@ -15,8 +15,6 @@ class StoreDocumentRequestRequest extends FormRequest
     {
         return [
 
-            'student_id' => 'required|exists:students,id',
-
             'document_type_id' => 'required|exists:document_types,id',
 
             'observations' => 'nullable|string|max:1000',

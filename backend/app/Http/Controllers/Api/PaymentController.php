@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Models\Payment;
 use App\Models\DocumentRequest;
+use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -285,4 +286,37 @@ class PaymentController extends Controller
 
         }
     }
+
+    public function myPayments(Request $request)
+{
+    $student = Student::where(
+        'user_id',
+        $request->user()->id
+    )->first();
+
+    if (!$student) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Estudante não encontrado.'
+        ],404);
+
+    }
+
+    $payments = Payment::where(
+        'student_id',
+        $student->id
+    )
+    ->latest()
+    ->get();
+
+    return response()->json([
+
+        'success'=>true,
+
+        'data'=>$payments
+
+    ]);
+
+}
 }

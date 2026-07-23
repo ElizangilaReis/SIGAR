@@ -62,6 +62,14 @@ const paymentService = {
 
         );
 
+    },
+
+    myPayments(){
+
+        return api
+            .get("/student/payments")
+            .then(res=>res.data.data);
+
     }
 
 };

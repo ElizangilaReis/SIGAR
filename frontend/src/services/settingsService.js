@@ -44,17 +44,37 @@ const settingsService = {
 
     },
 
-    backup() {
+   async backup() {
 
-        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+        const response = await api.get(
 
-        window.open(
+            "/settings/backup",
 
-            `${apiUrl}/settings/backup`,
+            {
 
-            "_blank"
+                responseType: "blob"
+
+            }
 
         );
+
+        const url = window.URL.createObjectURL(
+
+            new Blob([response.data])
+
+        );
+
+        const link = document.createElement("a");
+
+        link.href = url;
+
+        link.download = "backup.sql";
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
 
     }
 

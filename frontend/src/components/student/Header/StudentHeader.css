@@ -1,0 +1,37 @@
+.admin-header{
+
+    height:80px;
+
+    background:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 35px;
+
+    border-bottom:1px solid #ececec;
+
+    box-shadow:0 2px 12px rgba(0,0,0,.04);
+
+}
+
+.admin-header h2{
+
+    margin:0;
+
+    color:#16213e;
+
+    font-size:28px;
+
+}
+
+.admin-header p{
+
+    margin-top:4px;
+
+    color:#7b8794;
+
+}

@@ -175,4 +175,25 @@ class DocumentTypeController extends Controller
             'data' => new DocumentTypeResource($documentType)
         ]);
     }
+
+    /**
+     * Listar documentos disponíveis para o estudante.
+     */
+    public function active(): JsonResponse
+    {
+        $documentTypes = DocumentType::where(
+            'active',
+            true
+        )
+        ->orderBy('name')
+        ->get();
+
+        return response()->json([
+
+            'success' => true,
+
+            'data' => DocumentTypeResource::collection($documentTypes)
+
+        ]);
+    }
 }

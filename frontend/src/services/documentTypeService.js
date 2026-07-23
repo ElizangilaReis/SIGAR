@@ -44,6 +44,14 @@ const documentTypeService = {
 
         );
 
+    },
+
+    active(){
+
+        return api
+            .get("/student/document-types")
+            .then(res => res.data.data);
+
     }
 
 };

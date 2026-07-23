@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\DocumentRequestController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\StudentDashboardController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -142,4 +143,30 @@ Route::middleware('auth:sanctum')->group(function () {
         [SettingController::class,'backup']
     );
         
+
+    //Estudante
+    Route::get(
+        '/student/dashboard',
+        [StudentDashboardController::class, 'index']
+    );
+
+    Route::get(
+        '/student/requests',
+        [DocumentRequestController::class,'myRequests']
+    );
+
+    Route::post(
+        '/document-requests',
+        [DocumentRequestController::class, 'store']
+    );
+
+    Route::get(
+        '/student/payments',
+        [PaymentController::class,'myPayments']
+    );
+
+    Route::get(
+        '/student/document-types',
+        [DocumentTypeController::class, 'active']
+    );
 });

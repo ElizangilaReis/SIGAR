@@ -1,10 +1,18 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login";
-import Dashboard from "../pages/Dashboard";
-import EmployeeDashboard from "../pages/EmployeeDashboard";
+
+import Dashboard from "../pages/student/dashboard/Dashboard";
+import MyRequests from "../pages/student/requests/MyRequests";
+import MyPayments from "../pages/student/payments/MyPayments";
+import RequestDocument from "../pages/student/documents/RequestDocument";
+import Profile from "../pages/student/profile/Profile";
+import StudentSettings from "../pages/student/settings/Settings";
+
+import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 
 import AdminLayout from "../layouts/AdminLayout";
+import StudentLayout from "../layouts/StudentLayout";
 
 import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
 import Students from "../pages/admin/students/Students";
@@ -25,18 +33,56 @@ export default function AppRoutes() {
 
             <Routes>
 
+                {/* Login */}
                 <Route path="/login" element={<Login />} />
+
+                {/* ===========================
+                   ÁREA DO ESTUDANTE
+                ============================ */}
 
                 <Route
                     path="/dashboard"
                     element={
                         <PrivateRoute>
                             <RoleRoute allowedRoles={["student"]}>
-                                <Dashboard />
+                                <StudentLayout />
                             </RoleRoute>
                         </PrivateRoute>
                     }
-                />
+                >
+
+                    <Route index element={<Dashboard />} />
+
+                    <Route
+                        path="requests"
+                        element={<MyRequests />}
+                    />
+
+                    <Route
+                        path="payments"
+                        element={<MyPayments />}
+                    />
+
+                    <Route
+                        path="documents"
+                        element={<RequestDocument />}
+                    />
+
+                    <Route
+                        path="profile"
+                        element={<Profile />}
+                    />
+
+                    <Route
+                        path="settings"
+                        element={<StudentSettings />}
+                    />
+
+                </Route>
+
+                {/* ===========================
+                   ÁREA DO FUNCIONÁRIO
+                ============================ */}
 
                 <Route
                     path="/employee"
@@ -48,6 +94,10 @@ export default function AppRoutes() {
                         </PrivateRoute>
                     }
                 />
+
+                {/* ===========================
+                   ÁREA DO ADMINISTRADOR
+                ============================ */}
 
                 <Route
                     path="/admin"
@@ -62,17 +112,35 @@ export default function AppRoutes() {
 
                     <Route index element={<AdminDashboard />} />
 
-                    <Route path="students" element={<Students />} />
+                    <Route
+                        path="students"
+                        element={<Students />}
+                    />
 
-                    <Route path="employees" element={<Employees />} />
+                    <Route
+                        path="employees"
+                        element={<Employees />}
+                    />
 
-                    <Route path="documents" element={<Documents />} />
+                    <Route
+                        path="documents"
+                        element={<Documents />}
+                    />
 
-                    <Route path="payments" element={<Payments />} />
+                    <Route
+                        path="payments"
+                        element={<Payments />}
+                    />
 
-                    <Route path="reports" element={<Reports />} />
+                    <Route
+                        path="reports"
+                        element={<Reports />}
+                    />
 
-                    <Route path="settings" element={<Settings />} /> 
+                    <Route
+                        path="settings"
+                        element={<Settings />}
+                    />
 
                 </Route>
 

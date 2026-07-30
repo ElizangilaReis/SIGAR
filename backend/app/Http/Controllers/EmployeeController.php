@@ -273,4 +273,51 @@ class EmployeeController extends Controller
 
         ]);
     }
+
+    /**
+     * Perfil do funcionário autenticado.
+     */
+    public function myProfile(Request $request)
+    {
+        $user = $request->user()->load([
+            'employee.department',
+            'employee.position'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $user
+        ]);
+    }
+    
+   public function updateMyProfile(Request $request)
+    {
+        $request->validate([
+
+            'name' => 'required|string|max:255',
+
+            'phone' => 'nullable|string|max:20',
+
+        ]);
+
+        $user = $request->user();
+
+        $user->update([
+
+            'name' => $request->name,
+
+            'phone' => $request->phone,
+
+        ]);
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Perfil actualizado com sucesso.',
+
+            'data' => $user
+
+        ]);
+    }
 }

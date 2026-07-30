@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StudentDashboardController;
+use App\Http\Controllers\Api\EmployeeDashboardController;
+use App\Http\Controllers\Api\NotificationController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -73,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
         PaymentController::class
     );
 
+    
     /*
     |--------------------------------------------------------------------------
     | Relatórios
@@ -169,4 +172,79 @@ Route::middleware('auth:sanctum')->group(function () {
         '/student/document-types',
         [DocumentTypeController::class, 'active']
     );
+
+    Route::get('/student/profile', [StudentController::class, 'myProfile']);
+
+    Route::get(
+        '/student/notifications',
+        [NotificationController::class, 'index']
+    );
+
+    Route::patch(
+        '/student/notifications/{notification}/read',
+        [NotificationController::class, 'markAsRead']
+    );
+
+     Route::get(
+        '/student/documents',
+        [DocumentRequestController::class, 'myDocuments']
+    );
+
+    Route::get(
+        '/student/documents/{documentRequest}/view',
+        [DocumentRequestController::class, 'viewDocument']
+    );
+
+    Route::get(
+        '/student/documents/{documentRequest}/download',
+        [DocumentRequestController::class, 'downloadDocument']
+    );
+    //======================================================================
+    // Funcionário
+    //======================================================================
+
+    Route::prefix('employee')->group(function () {
+
+        Route::get(
+            '/dashboard',
+            [EmployeeDashboardController::class,'index']
+        );
+
+        Route::get(
+            '/profile',
+            [EmployeeController::class,'myProfile']
+        );
+
+        // Pedidos
+        Route::get(
+            '/requests',
+            [DocumentRequestController::class,'employeeRequests']
+        );
+
+        Route::get(
+            '/requests/{documentRequest}',
+            [DocumentRequestController::class,'show']
+        );
+
+        Route::put(
+            '/requests/{documentRequest}',
+            [DocumentRequestController::class,'update']
+        );
+
+        // Pagamentos
+        Route::get(
+            '/payments',
+            [PaymentController::class,'employeePayments']
+        );
+
+        Route::get(
+            '/documents/ready',
+            [DocumentRequestController::class, 'readyDocuments']
+        );
+
+        Route::put(
+            '/profile',
+            [EmployeeController::class, 'updateMyProfile']
+        );
+    });
 });

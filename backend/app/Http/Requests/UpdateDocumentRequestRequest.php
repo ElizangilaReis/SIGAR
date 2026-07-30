@@ -16,7 +16,7 @@ class UpdateDocumentRequestRequest extends FormRequest
     {
         return [
 
-            'student_id' => 'required|exists:students,id',
+            'student_id' => 'sometimes|exists:students,id',
 
             'document_type_id' => 'required|exists:document_types,id',
 

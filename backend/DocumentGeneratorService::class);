@@ -1,0 +1,18 @@
+[90m= [39m[34;4mApp\Models\DocumentRequest[39;24m {#6594
+    [34mid[39m: [35m5[39m,
+    [34mstudent_id[39m: [35m1[39m,
+    [34mdocument_type_id[39m: [35m7[39m,
+    [34memployee_id[39m: [35m1[39m,
+    [34mreference[39m: "[32mDOC2026000005[39m",
+    [34mstatus[39m: "[32mEntregue[39m",
+    [34mobservations[39m: "[32mFaltando apenas confirmar o pagamento[39m",
+    [34mpdf_path[39m: [36mnull[39m,
+    [34mverification_code[39m: [36mnull[39m,
+    [34missued_at[39m: [36mnull[39m,
+    [34mrequested_at[39m: "[32m2026-07-28 15:01:20[39m",
+    [34mcompleted_at[39m: "[32m2026-07-30 00:57:55[39m",
+    [34mdelivered_at[39m: "[32m2026-07-30 01:40:10[39m",
+    [34mcreated_at[39m: "[32m2026-07-28 15:01:20[39m",
+    [34mupdated_at[39m: "[32m2026-07-30 01:40:10[39m",
+  }
+

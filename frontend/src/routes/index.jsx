@@ -8,8 +8,18 @@ import MyPayments from "../pages/student/payments/MyPayments";
 import RequestDocument from "../pages/student/documents/RequestDocument";
 import Profile from "../pages/student/profile/Profile";
 import StudentSettings from "../pages/student/settings/Settings";
+import Notifications from "../pages/student/notifications/Notifications";
+import MyDocuments from '../pages/student/my-documents/MyDocuments';
 
-import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
+
+import EmployeeLayout from "../layouts/EmployeeLayout";
+import EmployeeDashboard from "../pages/employee/dashboard/EmployeeDashboard";
+import EmployeeRequests from "../pages/employee/requests/Requests";
+import EmployeePayments from "../pages/employee/payments/Payments";
+import ReadyDocuments from "../pages/employee/documents/ReadyDocuments";
+import EmployeeProfile from "../pages/employee/profile/Profile";
+import EmployeeSettings from "../pages/employee/settings/Settings";
+import EmployeeReports from "../pages/employee/reports/Reports";
 
 import AdminLayout from "../layouts/AdminLayout";
 import StudentLayout from "../layouts/StudentLayout";
@@ -78,6 +88,16 @@ export default function AppRoutes() {
                         element={<StudentSettings />}
                     />
 
+                    <Route
+                        path="notifications"
+                        element={<Notifications />}
+                    />
+
+                    <Route
+                        path="my-documents"
+                        element={<MyDocuments  />}
+                    />
+
                 </Route>
 
                 {/* ===========================
@@ -89,11 +109,48 @@ export default function AppRoutes() {
                     element={
                         <PrivateRoute>
                             <RoleRoute allowedRoles={["employee"]}>
-                                <EmployeeDashboard />
+                                <EmployeeLayout />
                             </RoleRoute>
                         </PrivateRoute>
                     }
-                />
+                >
+
+                    <Route
+                        index
+                        element={<EmployeeDashboard />}
+                    />
+
+                    <Route
+                        path="requests"
+                        element={<EmployeeRequests />}
+                    />
+
+                    <Route
+                        path="payments"
+                        element={<EmployeePayments />}
+                    />
+
+                    <Route
+                        path="documents"
+                        element={<ReadyDocuments />}
+                    />
+
+                    <Route
+                        path="reports"
+                        element={<EmployeeReports />}
+                    />
+
+                    <Route
+                        path="profile"
+                        element={<EmployeeProfile />}
+                    />
+
+                    <Route
+                        path="settings"
+                        element={<EmployeeSettings />}
+                    />
+
+                </Route>
 
                 {/* ===========================
                    ÁREA DO ADMINISTRADOR
@@ -110,7 +167,10 @@ export default function AppRoutes() {
                     }
                 >
 
-                    <Route index element={<AdminDashboard />} />
+                    <Route
+                        index
+                        element={<AdminDashboard />}
+                    />
 
                     <Route
                         path="students"

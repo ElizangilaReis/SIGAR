@@ -282,4 +282,29 @@ class StudentController extends Controller
             ], 500);
         }
     }
+
+    public function myProfile(Request $request)
+    {
+        $student = Student::with([
+            'user',
+            'course',
+            'course.faculty'
+        ])
+        ->where('user_id', $request->user()->id)
+        ->first();
+
+        if (!$student) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Estudante não encontrado.'
+            ],404);
+
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $student
+        ]);
+    }
 }

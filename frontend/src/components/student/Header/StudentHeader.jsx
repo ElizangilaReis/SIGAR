@@ -1,31 +1,93 @@
-import { getUser } from "../../../services/auth";
+import { useEffect, useState } from 'react';
 
-import "./StudentHeader.css";
+import { getUser } from '../../../services/auth';
+import notificationService from '../../../services/notificationService';
+
+import './StudentHeader.css';
 
 export default function StudentHeader() {
 
-    const user = getUser();
+const user = getUser();
 
-    return (
+const [unread, setUnread] = useState(0);
 
-        <header className="admin-header">
+useEffect(() => {
 
-            <div>
+    loadNotifications();
 
-                <h2>Painel do Estudante</h2>
+}, []);
 
-                <p>
+async function loadNotifications() {
 
-                    Bem-vindo,
+    try {
 
-                    <strong> {user?.name}</strong>
+        const notifications = await notificationService.getAll();
 
-                </p>
+        setUnread(
 
-            </div>
+            notifications.filter(notification => !notification.read).length
 
-        </header>
+        );
 
-    );
+    } catch {
+
+        setUnread(0);
+
+    }
 
 }
+
+return (
+
+    <header className="admin-header">
+
+        <div>
+
+            <h2>Painel do Estudante</h2>
+
+            <p>
+
+                Bem-vindo,
+
+                <strong> {user?.name}</strong>
+
+            </p>
+
+        </div>
+
+        <div className="header-actions">
+
+            <a
+
+                href="/dashboard/notifications"
+
+                className="notification-btn"
+
+            >
+
+                🔔
+
+                {
+
+                    unread > 0 && (
+
+                        <span className="notification-badge">
+
+                            {unread}
+
+                        </span>
+
+                    )
+
+                }
+
+            </a>
+
+        </div>
+
+    </header>
+
+);
+
+}
+

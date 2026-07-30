@@ -35,3 +35,67 @@
     color:#7b8794;
 
 }
+
+.header-actions{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+.notification-btn{
+
+    position:relative;
+
+    width:44px;
+
+    height:44px;
+
+    border-radius:50%;
+
+    background:#f3f4f6;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-decoration:none;
+
+    font-size:20px;
+
+}
+
+.notification-badge{
+
+    position:absolute;
+
+    top:-4px;
+
+    right:-4px;
+
+    min-width:20px;
+
+    height:20px;
+
+    border-radius:50%;
+
+    background:#ef4444;
+
+    color:#fff;
+
+    font-size:12px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:600;
+
+    padding:0 5px;
+
+}

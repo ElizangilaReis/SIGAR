@@ -70,7 +70,17 @@ const paymentService = {
             .get("/student/payments")
             .then(res=>res.data.data);
 
-    }
+    },
+
+    employeePayments() {
+    return api
+        .get('/employee/payments')
+        .then(res => res.data.data);
+    },
+
+    changeStatus(id, status) {
+        return api.patch(`/payments/${id}/status`, { status });
+    },
 
 };
 

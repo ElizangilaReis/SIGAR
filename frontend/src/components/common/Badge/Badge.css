@@ -1,65 +1,36 @@
 .badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
+    display:inline-block;
     padding:6px 12px;
-
     border-radius:20px;
-
     font-size:13px;
-
     font-weight:600;
-
+    color:#fff;
 }
 
 .badge.warning{
-
-    background:#FFF4CC;
-
-    color:#B8860B;
-
+    background:#f59e0b;
 }
 
 .badge.info{
-
-    background:#D6ECFF;
-
-    color:#0A66C2;
-
+    background:#3b82f6;
 }
 
 .badge.success{
-
-    background:#DCFCE7;
-
-    color:#15803D;
-
+    background:#22c55e;
 }
 
 .badge.primary{
-
-    background:#DCEBFF;
-
-    color:#1D4ED8;
-
+    background:#2563eb;
 }
 
 .badge.danger{
+    background:#ef4444;
+}
 
-    background:#FEE2E2;
-
-    color:#B91C1C;
-
+.badge.secondary{
+    background:#6b7280;
 }
 
 .badge.default{
-
-    background:#EEEEEE;
-
-    color:#555;
-
+    background:#9ca3af;
 }

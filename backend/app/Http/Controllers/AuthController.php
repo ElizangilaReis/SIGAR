@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
-use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -42,9 +40,7 @@ class AuthController extends Controller
             if ($student->user->bi !== $password) {
 
                 return response()->json([
-
                     'message' => 'Número de estudante ou BI inválido.'
-
                 ], 401);
 
             }
@@ -56,48 +52,73 @@ class AuthController extends Controller
                 ->plainTextToken;
 
             return response()->json([
-
                 'user' => $user,
-
                 'token' => $token
-
             ]);
+
         }
 
         /*
         |--------------------------------------------------------------------------
-        | LOGIN DE FUNCIONÁRIO / ADMIN
+        | LOGIN DO FUNCIONÁRIO
         |--------------------------------------------------------------------------
         */
 
-        if (!Auth::attempt([
+        $employee = Employee::with('user')
+            ->where('employee_number', $login)
+            ->first();
 
-            'email' => $login,
+        if ($employee && $employee->user) {
 
-            'password' => $password
+            if ($employee->user->bi !== $password) {
 
-        ])) {
+                return response()->json([
+                    'message' => 'Número de funcionário ou BI inválido.'
+                ], 401);
+
+            }
+
+            $user = $employee->user;
+
+            $token = $user
+                ->createToken('api-token')
+                ->plainTextToken;
 
             return response()->json([
+                'user' => $user,
+                'token' => $token
+            ]);
 
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOGIN DO ADMINISTRADOR
+        |--------------------------------------------------------------------------
+        */
+
+        $admin = \App\Models\User::where('email', $login)
+            ->where('role', 'admin')
+            ->first();
+
+        if (
+            !$admin ||
+            !\Illuminate\Support\Facades\Hash::check($password, $admin->password)
+        ) {
+
+            return response()->json([
                 'message' => 'Credenciais inválidas.'
-
             ], 401);
 
         }
 
-        $user = Auth::user();
-
-        $token = $user
+        $token = $admin
             ->createToken('api-token')
             ->plainTextToken;
 
         return response()->json([
-
-            'user' => $user,
-
+            'user' => $admin,
             'token' => $token
-
         ]);
     }
 
@@ -112,9 +133,7 @@ class AuthController extends Controller
             ->delete();
 
         return response()->json([
-
             'message' => 'Logout realizado com sucesso.'
-
         ]);
     }
 }

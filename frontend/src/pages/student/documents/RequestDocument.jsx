@@ -1,42 +1,49 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import documentTypeService from "../../../services/documentTypeService";
 import studentRequestService from "../../../services/studentRequestService";
 
 import Loading from "../../../components/common/Loading/Loading";
-import Button from "../../../components/common/Button/Button";
 import Select from "../../../components/common/Select/Select";
 import TextArea from "../../../components/common/TextArea/TextArea";
+import Button from "../../../components/common/Button/Button";
 
-export default function RequestDocument(){
+export default function RequestDocuments() {
 
-    const [loading,setLoading]=useState(true);
+    const navigate = useNavigate();
 
-    const [saving,setSaving]=useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const [types,setTypes]=useState([]);
+    const [saving, setSaving] = useState(false);
 
-    const [documentTypeId,setDocumentTypeId]=useState("");
+    const [documentTypes, setDocumentTypes] = useState([]);
 
-    const [observations,setObservations]=useState("");
+    const [form, setForm] = useState({
 
-    useEffect(()=>{
+        document_type_id: "",
 
-        loadTypes();
+        observations: ""
 
-    },[]);
+    });
 
-    async function loadTypes(){
+    useEffect(() => {
 
-        try{
+        loadDocumentTypes();
+
+    }, []);
+
+    async function loadDocumentTypes() {
+
+        try {
 
             setLoading(true);
 
-            const data=await documentTypeService.active();
+            const data = await documentTypeService.getAll();
 
-            setTypes(data);
+            setDocumentTypes(data);
 
-        }finally{
+        } finally {
 
             setLoading(false);
 
@@ -44,45 +51,46 @@ export default function RequestDocument(){
 
     }
 
-    const selectedDocument=types.find(
+    function handleChange(e) {
 
-        item=>item.id==documentTypeId
+        setForm({
 
-    );
+            ...form,
 
-    async function handleSubmit(e){
+            [e.target.name]: e.target.value
+
+        });
+
+    }
+
+    async function handleSubmit(e) {
 
         e.preventDefault();
 
-        try{
+        try {
 
             setSaving(true);
 
-            await studentRequestService.create({
+            const result = await studentRequestService.create(form);
 
-                document_type_id:documentTypeId,
+            navigate(
+                "/dashboard/payments",
+                {
+                    state: result.payment
+                }
+            );
 
-                observations
-
-            });
-
-            alert("Pedido efectuado com sucesso.");
-
-            setDocumentTypeId("");
-
-            setObservations("");
-
-        }catch(error){
+        } catch (error) {
 
             alert(
 
                 error.response?.data?.message ||
 
-                "Erro ao efectuar pedido."
+                "Erro ao efectuar o pedido."
 
             );
 
-        }finally{
+        } finally {
 
             setSaving(false);
 
@@ -90,149 +98,178 @@ export default function RequestDocument(){
 
     }
 
-    if(loading){
+    if (loading) {
 
-        return <Loading/>;
+        return <Loading />;
 
     }
 
-    return(
+    const selectedDocument = documentTypes.find(
 
-        <div className="page">
+        item => item.id == form.document_type_id
+
+    );
+
+    return (
+
+        <>
 
             <div className="dashboard-header">
 
                 <h1>
 
-                    Solicitar Documento
+                    Novo Pedido
 
                 </h1>
 
                 <p>
 
-                    Escolha o documento pretendido.
+                    Solicite um novo documento académico.
 
                 </p>
 
             </div>
 
-            <form onSubmit={handleSubmit} className="card">
+            <form
+                className="settings-container"
+                onSubmit={handleSubmit}
+            >
 
-                <Select
+                <div className="settings-card">
 
-                    label="Tipo de Documento"
+                    <Select
 
-                    value={documentTypeId}
+                        label="Tipo de Documento"
 
-                    onChange={e=>setDocumentTypeId(e.target.value)}
+                        name="document_type_id"
 
-                >
+                        value={form.document_type_id}
 
-                    <option value="">
+                        onChange={handleChange}
 
-                        Seleccione
+                        options={[
 
-                    </option>
+                            {
+
+                                value: "",
+
+                                label: "Seleccione..."
+
+                            },
+
+                            ...documentTypes.map(item => ({
+
+                                value: item.id,
+
+                                label: item.name
+
+                            }))
+
+                        ]}
+
+                    />
 
                     {
 
-                        types.map(type=>(
+                        selectedDocument &&
 
-                            <option
+                        <>
 
-                                key={type.id}
-
-                                value={type.id}
-
+                            <div
+                                style={{
+                                    marginTop: "20px"
+                                }}
                             >
 
-                                {type.name}
+                                <p>
 
-                            </option>
+                                    <strong>Preço:</strong>{" "}
 
-                        ))
+                                    {selectedDocument.price} Kz
 
-                    }
+                                </p>
 
-                </Select>
+                                <p>
 
-                {
+                                    <strong>Prazo:</strong>{" "}
 
-                    selectedDocument && (
+                                    {selectedDocument.processing_days} dias
 
-                        <div className="document-info">
+                                </p>
 
-                            <h3>
+                                {
 
-                                {selectedDocument.name}
+                                    selectedDocument.description &&
 
-                            </h3>
+                                    <p>
 
-                            <p>
+                                        <strong>Descrição:</strong>{" "}
 
-                                <strong>Preço:</strong>{" "}
+                                        {selectedDocument.description}
 
-                                {selectedDocument.price} Kz
+                                    </p>
 
-                            </p>
+                                }
 
-                            <p>
+                            </div>
 
-                                <strong>Prazo:</strong>{" "}
-
-                                {selectedDocument.delivery_days} dias úteis
-
-                            </p>
-
-                            <p>
-
-                                {selectedDocument.description}
-
-                            </p>
-
-                        </div>
-
-                    )
-
-                }
-
-                <TextArea
-
-                    label="Observações"
-
-                    value={observations}
-
-                    onChange={e=>setObservations(e.target.value)}
-
-                />
-
-                <Button
-
-                    type="submit"
-
-                    disabled={saving || !documentTypeId}
-
-                >
-
-                    {
-
-                        saving
-
-                        ?
-
-                        "A Processar..."
-
-                        :
-
-                        "Solicitar Documento"
+                        </>
 
                     }
 
-                </Button>
+                    <TextArea
+
+                        label="Observações"
+
+                        name="observations"
+
+                        value={form.observations}
+
+                        onChange={handleChange}
+
+                        placeholder="Observações (opcional)"
+
+                    />
+
+                </div>
+
+                <div className="settings-footer">
+
+                    <Button
+
+                        type="submit"
+
+                        disabled={
+
+                            saving ||
+
+                            !form.document_type_id
+
+                        }
+
+                    >
+
+                        {
+
+                            saving
+
+                                ?
+
+                                "A processar..."
+
+                                :
+
+                                "Solicitar Documento"
+
+                        }
+
+                    </Button>
+
+                </div>
 
             </form>
 
-        </div>
+        </>
 
     );
 

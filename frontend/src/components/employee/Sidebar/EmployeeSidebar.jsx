@@ -2,9 +2,9 @@ import { NavLink } from "react-router-dom";
 
 import { logout } from "../../../services/auth";
 
-import "./StudentSidebar.css";
+import "./EmployeeSidebar.css";
 
-export default function StudentSidebar() {
+export default function EmployeeSidebar() {
 
     async function handleLogout(){
 
@@ -28,47 +28,43 @@ export default function StudentSidebar() {
 
                 <nav>
 
-                    <NavLink to="/dashboard" end>
+                    <NavLink to="/employee" end>
 
                         Dashboard
 
                     </NavLink>
 
-                    <NavLink to="/dashboard/notifications">
-                        Notificações
-                    </NavLink>
-
-                    <NavLink to="/dashboard/requests">
+                    <NavLink to="/employee/requests">
 
                         Pedidos
 
                     </NavLink>
 
-                    <NavLink to="/dashboard/documents">
-
-                        Documentos
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/my-documents">
-
-                        Meus Documentos
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/payments">
+                    <NavLink to="/employee/payments">
 
                         Pagamentos
 
                     </NavLink>
 
-                    <NavLink to="/dashboard/profile">
+                    <NavLink to="/employee/documents">
+
+                        Documentos Prontos
+
+                    </NavLink>
+
+                    <NavLink to="/employee/reports">
+
+                        Relatórios
+
+                    </NavLink>
+
+                    <NavLink to="/employee/profile">
 
                         Perfil
 
                     </NavLink>
 
-                    <NavLink to="/dashboard/settings">
+                    <NavLink to="/employee/settings">
 
                         Configurações
 

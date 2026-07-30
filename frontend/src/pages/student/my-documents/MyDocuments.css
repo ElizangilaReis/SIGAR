@@ -1,0 +1,29 @@
+.documents-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.documents-viewer {
+    width: 100%;
+    height: 75vh;
+    border: none;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.documents-empty {
+    padding: 32px;
+    text-align: center;
+    color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .documents-actions {
+        flex-direction: column;
+    }
+
+    .documents-viewer {
+        height: 65vh;
+    }
+}

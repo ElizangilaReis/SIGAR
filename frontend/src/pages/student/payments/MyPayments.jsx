@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import paymentService from "../../../services/paymentService";
 
@@ -7,31 +8,41 @@ import SearchBar from "../../../components/common/SearchBar/SearchBar";
 import Table from "../../../components/common/Table/Table";
 import Badge from "../../../components/common/Badge/Badge";
 
-export default function MyPayments(){
+export default function MyPayments() {
 
-    const [loading,setLoading]=useState(true);
+    const location = useLocation();
 
-    const [payments,setPayments]=useState([]);
+    const newPayment = location.state;
 
-    const [search,setSearch]=useState("");
+    const [showNewPayment, setShowNewPayment] = useState(!!newPayment);
 
-    useEffect(()=>{
+    const [loading, setLoading] = useState(true);
+
+    const [payments, setPayments] = useState([]);
+
+    const [search, setSearch] = useState("");
+
+    const [selectedPayment, setSelectedPayment] = useState(null);
+
+    const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
 
         loadPayments();
 
-    },[]);
+    }, []);
 
-    async function loadPayments(){
+    async function loadPayments() {
 
-        try{
+        try {
 
             setLoading(true);
 
-            const data=await paymentService.myPayments();
+            const data = await paymentService.myPayments();
 
             setPayments(data);
 
-        }finally{
+        } finally {
 
             setLoading(false);
 
@@ -39,13 +50,13 @@ export default function MyPayments(){
 
     }
 
-    if(loading){
+    if (loading) {
 
-        return <Loading/>;
+        return <Loading />;
 
     }
 
-    const filtered=payments.filter(payment=>
+    const filtered = payments.filter(payment =>
 
         payment.reference
             .toLowerCase()
@@ -59,7 +70,7 @@ export default function MyPayments(){
 
     );
 
-    return(
+    return (
 
         <>
 
@@ -79,13 +90,128 @@ export default function MyPayments(){
 
             </div>
 
+           {
+
+                showNewPayment && newPayment &&
+
+                    <div
+                        style={{
+                            background:"#ecfdf5",
+                            border:"1px solid #22c55e",
+                            borderRadius:"8px",
+                            padding:"20px",
+                            marginBottom:"20px",
+                            position:"relative"
+                        }}
+                    >
+
+                    <h3>
+
+                        ✅ Pedido registado com sucesso
+
+                    </h3>
+
+                    <button
+                        onClick={() => setShowNewPayment(false)}
+                        style={{
+                            position:"absolute",
+                            right:"15px",
+                            top:"15px",
+                            border:"none",
+                            background:"transparent",
+                            cursor:"pointer",
+                            fontSize:"18px",
+                            fontWeight:"bold"
+                        }}
+                    >
+                        ✕
+                    </button>
+
+                    <p>
+
+                        Utilize a referência abaixo para efectuar o pagamento.
+
+                    </p>
+
+                    <hr />
+
+                    <p>
+
+                        <strong>Referência:</strong>{" "}
+
+                        {newPayment.reference}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Valor:</strong>{" "}
+
+                        {newPayment.amount} Kz
+
+                    </p>
+
+                    <p>
+
+                        <strong>Método:</strong>{" "}
+
+                        {newPayment.payment_method}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Validade:</strong>{" "}
+
+                        {
+
+                            newPayment.expiry_date
+
+                                ?
+
+                                new Date(
+                                    newPayment.expiry_date
+                                ).toLocaleDateString("pt-PT")
+
+                                :
+
+                                "-"
+
+                        }
+
+                    </p>
+
+                    <button
+
+                        onClick={() => {
+
+                            navigator.clipboard.writeText(
+
+                                newPayment.reference
+
+                            );
+
+                            alert("Referência copiada.");
+
+                        }}
+
+                    >
+
+                        Copiar Referência
+
+                    </button>
+
+                </div>
+
+            }
+
             <SearchBar
 
                 placeholder="Pesquisar..."
 
                 value={search}
 
-                onChange={e=>setSearch(e.target.value)}
+                onChange={e => setSearch(e.target.value)}
 
             />
 
@@ -113,97 +239,240 @@ export default function MyPayments(){
 
                     {
 
-                        filtered.length>0
+                        filtered.length > 0
 
-                        ?
+                            ?
 
-                        filtered.map(payment=>(
+                            filtered.map(payment => (
 
-                            <tr key={payment.id}>
+                                <tr
 
-                                <td>
+                                    key={payment.id}
 
-                                    {payment.reference}
+                                    style={{
+                                        cursor: payment.status === "Pendente"
+                                            ? "pointer"
+                                            : "default"
+                                    }}
 
-                                </td>
+                                    onClick={() => {
 
-                                <td>
+                                        if (payment.status === "Pendente") {
 
-                                    {payment.amount} Kz
+                                            setSelectedPayment(payment);
 
-                                </td>
+                                            setShowModal(true);
 
-                                <td>
+                                        }
 
-                                    <Badge>
+                                    }}
 
-                                        {payment.status}
+                                >
 
-                                    </Badge>
+                                    <td>
 
-                                </td>
+                                        {payment.reference}
 
-                                <td>
+                                    </td>
 
-                                    {
+                                    <td>
 
-                                        payment.created_at
+                                        {payment.amount} Kz
 
-                                        ?
+                                    </td>
 
-                                        new Date(
+                                    <td>
+
+                                        <Badge>
+
+                                            {payment.status}
+
+                                        </Badge>
+
+                                    </td>
+
+                                    <td>
+
+                                        {
 
                                             payment.created_at
 
-                                        ).toLocaleDateString("pt-PT")
+                                                ?
 
-                                        :
+                                                new Date(
+                                                    payment.created_at
+                                                ).toLocaleDateString("pt-PT")
 
-                                        "-"
+                                                :
 
-                                    }
+                                                "-"
 
-                                </td>
+                                        }
 
-                                <td>
+                                    </td>
 
-                                    {
+                                    <td>
 
-                                        payment.status==="Pago"
+                                        {
 
-                                        &&
+                                            payment.status === "Pago"
 
-                                        <button>
+                                                &&
 
-                                            Recibo
+                                                <button>
 
-                                        </button>
+                                                    Recibo
 
-                                    }
+                                                </button>
+
+                                        }
+
+                                    </td>
+
+                                </tr>
+
+                            ))
+
+                            :
+
+                            <tr>
+
+                                <td colSpan="5">
+
+                                    Nenhum pagamento encontrado.
 
                                 </td>
 
                             </tr>
-
-                        ))
-
-                        :
-
-                        <tr>
-
-                            <td colSpan="5">
-
-                                Nenhum pagamento encontrado.
-
-                            </td>
-
-                        </tr>
 
                     }
 
                 </tbody>
 
             </Table>
+
+            {
+
+                showModal && selectedPayment && (
+
+                    <div className="modal-overlay">
+
+                        <div className="modal">
+
+                            <h2>
+
+                                Dados para Pagamento
+
+                            </h2>
+
+                            <hr />
+
+                            <p>
+
+                                <strong>Referência:</strong>{" "}
+
+                                {selectedPayment.reference}
+
+                            </p>
+
+                            <p>
+
+                                <strong>Valor:</strong>{" "}
+
+                                {selectedPayment.amount} Kz
+
+                            </p>
+
+                            <p>
+
+                                <strong>Método:</strong>{" "}
+
+                                {selectedPayment.payment_method}
+
+                            </p>
+
+                            <p>
+
+                                <strong>Estado:</strong>{" "}
+
+                                <Badge status={selectedPayment.status} />
+                            </p>
+
+                            <p>
+
+                                <strong>Validade:</strong>{" "}
+
+                                {
+
+                                    selectedPayment.expiry_date
+
+                                        ?
+
+                                        new Date(
+                                            selectedPayment.expiry_date
+                                        ).toLocaleDateString("pt-PT")
+
+                                        :
+
+                                        "-"
+
+                                }
+
+                            </p>
+
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: "10px",
+                                    marginTop: "20px"
+                                }}
+                            >
+
+                                <button
+
+                                    onClick={() => {
+
+                                        navigator.clipboard.writeText(
+
+                                            selectedPayment.reference
+
+                                        );
+
+                                        alert("Referência copiada.");
+
+                                    }}
+
+                                >
+
+                                    Copiar Referência
+
+                                </button>
+
+                                <button
+
+                                    onClick={() => {
+
+                                        setShowModal(false);
+
+                                        setSelectedPayment(null);
+
+                                    }}
+
+                                >
+
+                                    Fechar
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                )
+
+            }
 
         </>
 

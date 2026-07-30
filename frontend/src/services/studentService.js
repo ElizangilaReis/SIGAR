@@ -44,6 +44,14 @@ const studentService = {
 
         );
 
+    },
+
+    myProfile(){
+
+        return api
+            .get("/student/profile")
+            .then(res=>res.data.data);
+
     }
 
 };

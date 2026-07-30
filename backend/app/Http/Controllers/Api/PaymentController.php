@@ -210,7 +210,10 @@ class PaymentController extends Controller
 
             ]);
 
-            if ($request->status === "Pago") {
+            if (
+                $request->status === 'Pago' &&
+                $payment->documentRequest
+            ) {
 
                 $payment->documentRequest->update([
 
@@ -252,7 +255,6 @@ class PaymentController extends Controller
 
         }
     }
-
     /**
      * Remover pagamento.
      */
@@ -318,5 +320,26 @@ class PaymentController extends Controller
 
     ]);
 
+}
+
+public function employeePayments()
+{
+    $payments = Payment::with([
+
+        'student.user',
+
+        'documentRequest.documentType'
+
+    ])
+    ->latest()
+    ->get();
+
+    return response()->json([
+
+        'success' => true,
+
+        'data' => PaymentResource::collection($payments)
+
+    ]);
 }
 }

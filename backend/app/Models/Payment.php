@@ -23,14 +23,17 @@ class Payment extends Model
 
         'status',
 
-        'transaction_id',
+        'expiry_date',
 
         'payment_date',
 
-        'expiry_date',
+        'validated_at',
 
-        'notes'
+        'receipt_path',
 
+        'verification_code',
+        
+        'receipt_hash',
     ];
 
     protected $casts = [

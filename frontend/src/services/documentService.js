@@ -1,27 +1,41 @@
 import api from './api';
 
 const documentService = {
+    async getMyDocuments() {
+        const response = await api.get('/student/documents');
+        return response.data.data || [];
+    },
 
-getMyDocuments() {
+    async getDocumentBlob(id) {
+        const response = await api.get(
+            `/student/documents/${id}/view`,
+            {
+                responseType: 'blob',
+            }
+        );
 
-    return api
-        .get('/student/documents')
-        .then(response => response.data.data);
+        return URL.createObjectURL(response.data);
+    },
 
-},
+    async downloadDocument(id, reference) {
+        const response = await api.get(
+            `/student/documents/${id}/download`,
+            {
+                responseType: 'blob',
+            }
+        );
 
-getViewUrl(id) {
+        const url = URL.createObjectURL(response.data);
 
-    return `http://127.0.0.1:8000/api/student/documents/${id}/view`;
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${reference}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
 
-},
-
-getDownloadUrl(id) {
-
-    return `http://127.0.0.1:8000/api/student/documents/${id}/download`;
-
-}
-
+        URL.revokeObjectURL(url);
+    },
 };
 
 export default documentService;

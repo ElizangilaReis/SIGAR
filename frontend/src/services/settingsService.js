@@ -1,82 +1,83 @@
-import api from "./api";
+import api from './api';
 
 const settingsService = {
+async get() {
+const response = await api.get('/settings');
+return response.data.data;
+},
 
-    get() {
+async update(data) {
+    const response = await api.put('/settings', data);
+    return response.data;
+},
 
-        return api
-            .get("/settings")
-            .then(res => res.data.data);
+async uploadLogo(file) {
+    const formData = new FormData();
+    formData.append('logo', file);
 
-    },
+    const response = await api.post(
+        '/settings/logo',
+        formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }
+    );
 
-    update(data) {
+    return response.data;
+},
 
-        return api
-            .put("/settings", data)
-            .then(res => res.data);
+async backup() {
+    const response = await api.get(
+        '/settings/backup',
+        {
+            responseType: 'blob',
+        }
+    );
 
-    },
+    const url = window.URL.createObjectURL(response.data);
 
-    uploadLogo(file) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'backup.sql';
 
-        const formData = new FormData();
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
-        formData.append("logo", file);
+    window.URL.revokeObjectURL(url);
+},
 
-        return api.post(
+applyTheme(theme) {
+    localStorage.setItem('theme', theme);
 
-            "/settings/logo",
+    let appliedTheme = theme;
 
-            formData,
-
-            {
-
-                headers: {
-
-                    "Content-Type": "multipart/form-data"
-
-                }
-
-            }
-
-        );
-
-    },
-
-   async backup() {
-
-        const response = await api.get(
-
-            "/settings/backup",
-
-            {
-
-                responseType: "blob"
-
-            }
-
-        );
-
-        const url = window.URL.createObjectURL(
-
-            new Blob([response.data])
-
-        );
-
-        const link = document.createElement("a");
-
-        link.href = url;
-
-        link.download = "backup.sql";
-
-        document.body.appendChild(link);
-
-        link.click();
-
-        link.remove();
-
+    if (theme === 'system') {
+        appliedTheme = window.matchMedia(
+            '(prefers-color-scheme: dark)'
+        ).matches
+            ? 'dark'
+            : 'light';
     }
+
+    document.body.classList.remove(
+        'theme-light',
+        'theme-dark'
+    );
+
+    document.body.classList.add(
+        `theme-${appliedTheme}`
+    );
+},
+
+getCurrentTheme() {
+    return (
+        localStorage.getItem('theme') ||
+        'system'
+    );
+},
 
 };
 

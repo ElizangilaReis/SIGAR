@@ -11,33 +11,83 @@ class DocumentGeneratorService
 {
     public function generate(DocumentRequest $documentRequest): string
     {
-        $documentRequest->load([
-            'student.user',
-            'documentType'
-        ]);
+    $documentRequest->load([
+    'student.user',
+    'student.course.faculty',
+    'student.grades',
+    'documentType'
+    ]);
 
-        $verificationCode = $documentRequest->verification_code
-            ?: strtoupper(Str::random(12));
+    $verificationCode = strtoupper(Str::random(10));
 
-        $issuedAt = now();
+    $verificationUrl = config('app.url') . '/verificar/' . $verificationCode;
 
-        $pdf = Pdf::loadView('documents.declaration', [
-            'documentRequest' => $documentRequest,
-            'verificationCode' => $verificationCode,
-            'issuedAt' => $issuedAt
-        ]);
+    $data = app(DocumentDataService::class)
+        ->getData($documentRequest);
 
-        $filename = $documentRequest->reference . '.pdf';
-        $path = 'documents/' . $filename;
+    $template = $this->resolveTemplate(
+        $documentRequest->documentType->code
+    );
 
-        Storage::disk('public')->put($path, $pdf->output());
+    $pdf = Pdf::loadView($template, array_merge($data, [
+        'documentRequest' => $documentRequest,
+        'verificationCode' => $verificationCode,
+        'verificationUrl' => $verificationUrl,
+        'title' => $documentRequest->documentType->name,
+        'issuedAt' => now(),
+    ]))->setPaper('a4');
 
-        $documentRequest->update([
-            'pdf_path' => $path,
-            'verification_code' => $verificationCode,
-            'issued_at' => $issuedAt
-        ]);
+    $path = 'documents/' . $documentRequest->reference . '.pdf';
 
-        return $path;
+    Storage::disk('public')->put($path, $pdf->output());
+
+    DocumentRequest::where('id', $documentRequest->id)->update([
+        'pdf_path' => $path,
+        'verification_code' => $verificationCode,
+        'document_hash' => hash('sha256', $pdf->output()),
+        'issued_at' => now(),
+    ]);
+
+    return $path;
+
+    }
+
+    private function resolveTemplate(string $code): string
+    {
+        return match ($code) {
+
+            'DEC_MAT' =>
+                'documents.declarations.enrollment',
+
+            'DEC_FREQ' =>
+                'documents.declarations.attendance',
+
+            'HIST' =>
+                'documents.transcripts.academic_record',
+
+            'CERT_NOTAS' =>
+                'documents.certificates.grades',
+
+            'PROG_DISC' =>
+                'documents.programs.course_program',
+
+            'CERT_CONC' =>
+                'documents.certificates.completion',
+
+            'DIPLOMA' =>
+                'documents.certificates.diploma',
+
+            'CARTAO2V' =>
+                'documents.certificates.student_card_duplicate',
+
+            'CARTA_REC' =>
+                'documents.declarations.recommendation',
+
+            'EQUIV' =>
+                'documents.declarations.equivalence',
+
+            default =>
+                'documents.declarations.enrollment',
+        };
     }
 }

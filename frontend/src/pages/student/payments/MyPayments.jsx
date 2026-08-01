@@ -1,481 +1,300 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
-import paymentService from "../../../services/paymentService";
+import paymentService from '../../../services/paymentService';
 
-import Loading from "../../../components/common/Loading/Loading";
-import SearchBar from "../../../components/common/SearchBar/SearchBar";
-import Table from "../../../components/common/Table/Table";
-import Badge from "../../../components/common/Badge/Badge";
+import Loading from '../../../components/common/Loading/Loading';
+import SearchBar from '../../../components/common/SearchBar/SearchBar';
+import Table from '../../../components/common/Table/Table';
+import Badge from '../../../components/common/Badge/Badge';
+import Button from '../../../components/common/Button/Button';
+import Modal from '../../../components/common/Modal/Modal';
 
 export default function MyPayments() {
 
-    const location = useLocation();
+const location = useLocation();
 
-    const newPayment = location.state;
+const newPayment = location.state;
 
-    const [showNewPayment, setShowNewPayment] = useState(!!newPayment);
+const [loading, setLoading] = useState(true);
 
-    const [loading, setLoading] = useState(true);
+const [payments, setPayments] = useState([]);
 
-    const [payments, setPayments] = useState([]);
+const [search, setSearch] = useState('');
 
-    const [search, setSearch] = useState("");
+const [showNewPayment, setShowNewPayment] = useState(!!newPayment);
 
-    const [selectedPayment, setSelectedPayment] = useState(null);
+const [selectedPayment, setSelectedPayment] = useState(null);
 
-    const [showModal, setShowModal] = useState(false);
+const [receiptUrl, setReceiptUrl] = useState(null);
 
-    useEffect(() => {
+useEffect(() => {
+    loadPayments();
+}, []);
 
-        loadPayments();
-
-    }, []);
-
-    async function loadPayments() {
-
-        try {
-
-            setLoading(true);
-
-            const data = await paymentService.myPayments();
-
-            setPayments(data);
-
-        } finally {
-
-            setLoading(false);
-
-        }
-
+async function loadPayments() {
+    try {
+        setLoading(true);
+        const data = await paymentService.myPayments();
+        setPayments(data);
+    } finally {
+        setLoading(false);
     }
+}
 
-    if (loading) {
-
-        return <Loading />;
-
+async function handleViewReceipt(payment) {
+    try {
+        const url = await paymentService.getReceiptBlob(payment.id);
+        setReceiptUrl(url);
+        setSelectedPayment(payment);
+    } catch (error) {
+        console.error(error);
+        alert('Não foi possível abrir o recibo.');
     }
+}
 
-    const filtered = payments.filter(payment =>
+function handlePrint() {
+    if (!receiptUrl) return;
 
-        payment.reference
-            .toLowerCase()
-            .includes(search.toLowerCase())
+    const printWindow = window.open(receiptUrl, '_blank');
+    printWindow.onload = () => {
+        printWindow.print();
+    };
+}
 
-        ||
+if (loading) {
+    return <Loading />;
+}
 
-        payment.status
-            .toLowerCase()
-            .includes(search.toLowerCase())
+const filtered = payments.filter(payment =>
+    payment.reference.toLowerCase().includes(search.toLowerCase()) ||
+    payment.status.toLowerCase().includes(search.toLowerCase())
+);
 
-    );
+return (
+    <>
+        <div className="dashboard-header">
+            <h1>Meus Pagamentos</h1>
+            <p>Consulte todos os pagamentos efectuados.</p>
+        </div>
 
-    return (
+        {showNewPayment && newPayment && (
+            <div
+                style={{
+                    background: '#ecfdf5',
+                    border: '1px solid #22c55e',
+                    borderRadius: 8,
+                    padding: 20,
+                    marginBottom: 20,
+                    position: 'relative',
+                }}
+            >
+                <h3>Pedido registado com sucesso</h3>
 
-        <>
+                <button
+                    onClick={() => setShowNewPayment(false)}
+                    style={{
+                        position: 'absolute',
+                        right: 15,
+                        top: 15,
+                        border: 'none',
+                        background: 'transparent',
+                        cursor: 'pointer',
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                    }}
+                >
+                    ×
+                </button>
 
-            <div className="dashboard-header">
+                <p>Utilize a referência abaixo para efectuar o pagamento.</p>
 
-                <h1>
-
-                    Meus Pagamentos
-
-                </h1>
+                <hr />
 
                 <p>
-
-                    Consulte todos os pagamentos efectuados.
-
+                    <strong>Referência:</strong> {newPayment.reference}
                 </p>
 
+                <p>
+                    <strong>Valor:</strong> {newPayment.amount} Kz
+                </p>
+
+                <p>
+                    <strong>Método:</strong> {newPayment.payment_method}
+                </p>
+
+                <p>
+                    <strong>Validade:</strong>{' '}
+                    {newPayment.expiry_date
+                        ? new Date(newPayment.expiry_date).toLocaleDateString('pt-PT')
+                        : '-'}
+                </p>
+
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        navigator.clipboard.writeText(newPayment.reference);
+                        alert('Referência copiada.');
+                    }}
+                >
+                    Copiar referência
+                </Button>
             </div>
+        )}
 
-           {
+        <SearchBar
+            placeholder="Pesquisar..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+        />
 
-                showNewPayment && newPayment &&
+        <Table
+    columns={[
+        'Referência',
+        'Documento',
+        'Valor',
+        'Estado',
+        'Ações',
+    ]}
+>
+    {filtered.length > 0 ? (
+        filtered.map(payment => (
+            <tr key={payment.id}>
+                <td>{payment.reference}</td>
 
+                <td>
+                    {payment.document_request?.document_type?.name ||
+                        payment.documentRequest?.documentType?.name ||
+                        '-'}
+                </td>
+
+                <td>
+                    {Number(payment.amount).toLocaleString('pt-PT')} Kz
+                </td>
+
+                <td>
+                    <Badge status={payment.status} />
+                </td>
+
+                <td>
                     <div
                         style={{
-                            background:"#ecfdf5",
-                            border:"1px solid #22c55e",
-                            borderRadius:"8px",
-                            padding:"20px",
-                            marginBottom:"20px",
-                            position:"relative"
+                            display: 'flex',
+                            gap: 8,
                         }}
                     >
-
-                    <h3>
-
-                        ✅ Pedido registado com sucesso
-
-                    </h3>
-
-                    <button
-                        onClick={() => setShowNewPayment(false)}
-                        style={{
-                            position:"absolute",
-                            right:"15px",
-                            top:"15px",
-                            border:"none",
-                            background:"transparent",
-                            cursor:"pointer",
-                            fontSize:"18px",
-                            fontWeight:"bold"
-                        }}
-                    >
-                        ✕
-                    </button>
-
-                    <p>
-
-                        Utilize a referência abaixo para efectuar o pagamento.
-
-                    </p>
-
-                    <hr />
-
-                    <p>
-
-                        <strong>Referência:</strong>{" "}
-
-                        {newPayment.reference}
-
-                    </p>
-
-                    <p>
-
-                        <strong>Valor:</strong>{" "}
-
-                        {newPayment.amount} Kz
-
-                    </p>
-
-                    <p>
-
-                        <strong>Método:</strong>{" "}
-
-                        {newPayment.payment_method}
-
-                    </p>
-
-                    <p>
-
-                        <strong>Validade:</strong>{" "}
-
-                        {
-
-                            newPayment.expiry_date
-
-                                ?
-
-                                new Date(
-                                    newPayment.expiry_date
-                                ).toLocaleDateString("pt-PT")
-
-                                :
-
-                                "-"
-
-                        }
-
-                    </p>
-
-                    <button
-
-                        onClick={() => {
-
-                            navigator.clipboard.writeText(
-
-                                newPayment.reference
-
-                            );
-
-                            alert("Referência copiada.");
-
-                        }}
-
-                    >
-
-                        Copiar Referência
-
-                    </button>
-
-                </div>
-
-            }
-
-            <SearchBar
-
-                placeholder="Pesquisar..."
-
-                value={search}
-
-                onChange={e => setSearch(e.target.value)}
-
-            />
-
-            <Table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>Referência</th>
-
-                        <th>Valor</th>
-
-                        <th>Estado</th>
-
-                        <th>Data</th>
-
-                        <th></th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {
-
-                        filtered.length > 0
-
-                            ?
-
-                            filtered.map(payment => (
-
-                                <tr
-
-                                    key={payment.id}
-
-                                    style={{
-                                        cursor: payment.status === "Pendente"
-                                            ? "pointer"
-                                            : "default"
-                                    }}
-
-                                    onClick={() => {
-
-                                        if (payment.status === "Pendente") {
-
-                                            setSelectedPayment(payment);
-
-                                            setShowModal(true);
-
-                                        }
-
-                                    }}
-
-                                >
-
-                                    <td>
-
-                                        {payment.reference}
-
-                                    </td>
-
-                                    <td>
-
-                                        {payment.amount} Kz
-
-                                    </td>
-
-                                    <td>
-
-                                        <Badge>
-
-                                            {payment.status}
-
-                                        </Badge>
-
-                                    </td>
-
-                                    <td>
-
-                                        {
-
-                                            payment.created_at
-
-                                                ?
-
-                                                new Date(
-                                                    payment.created_at
-                                                ).toLocaleDateString("pt-PT")
-
-                                                :
-
-                                                "-"
-
-                                        }
-
-                                    </td>
-
-                                    <td>
-
-                                        {
-
-                                            payment.status === "Pago"
-
-                                                &&
-
-                                                <button>
-
-                                                    Recibo
-
-                                                </button>
-
-                                        }
-
-                                    </td>
-
-                                </tr>
-
-                            ))
-
-                            :
-
-                            <tr>
-
-                                <td colSpan="5">
-
-                                    Nenhum pagamento encontrado.
-
-                                </td>
-
-                            </tr>
-
-                    }
-
-                </tbody>
-
-            </Table>
-
-            {
-
-                showModal && selectedPayment && (
-
-                    <div className="modal-overlay">
-
-                        <div className="modal">
-
-                            <h2>
-
-                                Dados para Pagamento
-
-                            </h2>
-
-                            <hr />
-
-                            <p>
-
-                                <strong>Referência:</strong>{" "}
-
-                                {selectedPayment.reference}
-
-                            </p>
-
-                            <p>
-
-                                <strong>Valor:</strong>{" "}
-
-                                {selectedPayment.amount} Kz
-
-                            </p>
-
-                            <p>
-
-                                <strong>Método:</strong>{" "}
-
-                                {selectedPayment.payment_method}
-
-                            </p>
-
-                            <p>
-
-                                <strong>Estado:</strong>{" "}
-
-                                <Badge status={selectedPayment.status} />
-                            </p>
-
-                            <p>
-
-                                <strong>Validade:</strong>{" "}
-
-                                {
-
-                                    selectedPayment.expiry_date
-
-                                        ?
-
-                                        new Date(
-                                            selectedPayment.expiry_date
-                                        ).toLocaleDateString("pt-PT")
-
-                                        :
-
-                                        "-"
-
-                                }
-
-                            </p>
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "10px",
-                                    marginTop: "20px"
+                        {payment.status === 'Pendente' && (
+                            <Button
+                                variant="primary"
+                                onClick={async () => {
+                                    await paymentService.confirmPayment(payment.id);
+                                    loadPayments();
                                 }}
                             >
+                                Já efectuei o pagamento
+                            </Button>
+                        )}
 
-                                <button
-
-                                    onClick={() => {
-
-                                        navigator.clipboard.writeText(
-
-                                            selectedPayment.reference
-
-                                        );
-
-                                        alert("Referência copiada.");
-
-                                    }}
-
+                        {payment.status === 'Pago' && (
+                            <>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => handleViewReceipt(payment)}
                                 >
+                                    Ver recibo
+                                </Button>
 
-                                    Copiar Referência
-
-                                </button>
-
-                                <button
-
-                                    onClick={() => {
-
-                                        setShowModal(false);
-
-                                        setSelectedPayment(null);
-
-                                    }}
-
+                                <Button
+                                    variant="primary"
+                                    onClick={() =>
+                                        paymentService.downloadReceipt(
+                                            payment.id,
+                                            payment.reference
+                                        )
+                                    }
                                 >
+                                    Download
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </td>
+            </tr>
+        ))
+    ) : (
+        <tr>
+            <td colSpan="5" style={{ textAlign: 'center' }}>
+                Nenhum pagamento encontrado.
+            </td>
+        </tr>
+    )}
+</Table>
 
-                                    Fechar
+        <Modal
+            open={!!selectedPayment}
+            title={`Recibo - ${selectedPayment?.reference || ''}`}
+            onClose={() => {
+                if (receiptUrl) {
+                    URL.revokeObjectURL(receiptUrl);
+                }
+                setReceiptUrl(null);
+                setSelectedPayment(null);
+            }}
+        >
+            {selectedPayment && receiptUrl && (
+                <>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: 16,
+                        }}
+                    >
+                        <strong>{selectedPayment.reference}</strong>
 
-                                </button>
+                        <div
+                            style={{
+                                display: 'flex',
+                                gap: 8,
+                            }}
+                        >
+                            <Button
+                                variant="secondary"
+                                onClick={handlePrint}
+                            >
+                                Imprimir
+                            </Button>
 
-                            </div>
-
+                            <Button
+                                variant="primary"
+                                onClick={() =>
+                                    paymentService.downloadReceipt(
+                                        selectedPayment.id,
+                                        selectedPayment.reference
+                                    )
+                                }
+                            >
+                                Download
+                            </Button>
                         </div>
-
                     </div>
 
-                )
-
-            }
-
-        </>
-
-    );
+                    <iframe
+                        src={receiptUrl}
+                        style={{
+                            width: '100%',
+                            height: '85vh',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: 8,
+                            background: '#fff',
+                        }}
+                        title="Recibo PDF"
+                    />
+                </>
+            )}
+        </Modal>
+    </>
+);
 
 }

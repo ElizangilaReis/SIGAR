@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Services\NotificationService;
 
 class DocumentRequestController extends Controller
 {
@@ -77,6 +78,11 @@ class DocumentRequestController extends Controller
                 'documentType',
                 'employee.user'
             ]);
+
+            NotificationService::notifyEmployees(
+                'Novo pedido de documento',
+                'Foi registado um novo pedido de ' . $documentRequest->documentType->name . '.'
+            );
 
             return response()->json([
                 'success' => true,
@@ -161,17 +167,19 @@ class DocumentRequestController extends Controller
         $documentRequest->update($updateData);
         $documentRequest->refresh();
 
-        // Gerar documento digital automaticamente
-        if (
-            $documentRequest->status === 'Pronto' &&
-            !$documentRequest->pdf_path
-        ) {
+        // Gerar ou regenerar PDF quando ficar Pronto
+        if ($documentRequest->status === 'Pronto') {
 
-            app(DocumentGeneratorService::class)
-                ->generate($documentRequest);
+            $generator = app(DocumentGeneratorService::class);
+
+            // Remove PDF antigo se existir
+            if ($documentRequest->pdf_path) {
+                Storage::disk('public')->delete($documentRequest->pdf_path);
+            }
+
+            $generator->generate($documentRequest);
 
             $documentRequest->refresh();
-
         }
 
         // Notificação
@@ -298,9 +306,23 @@ class DocumentRequestController extends Controller
 
         $documents = DocumentRequest::with('documentType')
             ->where('student_id', $student->id)
-            ->whereNotNull('pdf_path')
+            ->whereIn('status', ['Pronto', 'Entregue'])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($document) {
+
+                return [
+                    'id' => $document->id,
+                    'reference' => $document->reference,
+                    'status' => $document->status,
+                    'issued_at' => $document->issued_at,
+                    'document_type' => [
+                        'name' => $document->documentType->name
+                    ],
+                    'can_view' => !empty($document->pdf_path),
+                ];
+
+            });
 
         return response()->json([
             'success' => true,
@@ -308,22 +330,40 @@ class DocumentRequestController extends Controller
         ]);
     }
 
-    public function viewDocument(DocumentRequest $documentRequest)
-    {
+    public function viewDocument(
+        Request $request,
+        DocumentRequest $documentRequest
+    ) {
+
+        if (
+            $documentRequest->student->user_id
+            !== $request->user()->id
+        ) {
+
+            abort(403);
+
+        }
+
         if (!$documentRequest->pdf_path) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Documento ainda não foi gerado.'
-            ], 404);
+
+            abort(404);
+
         }
 
         return response()->file(
-            storage_path('app/public/' . $documentRequest->pdf_path)
+            storage_path(
+                'app/public/' . $documentRequest->pdf_path
+            )
         );
+
     }
 
-    public function downloadDocument(DocumentRequest $documentRequest)
+   public function downloadDocument(Request $request, DocumentRequest $documentRequest)
     {
+        if ($documentRequest->student->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
         if (!$documentRequest->pdf_path) {
             return response()->json([
                 'success' => false,
@@ -331,9 +371,19 @@ class DocumentRequestController extends Controller
             ], 404);
         }
 
-        return Storage::disk('public')->download(
-            $documentRequest->pdf_path,
-            $documentRequest->reference . '.pdf'
+        $file = storage_path('app/public/' . $documentRequest->pdf_path);
+
+        if (!file_exists($file)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ficheiro não encontrado.'
+            ], 404);
+        }
+
+        return response()->download(
+            $file,
+            $documentRequest->reference . '.pdf',
+            ['Content-Type' => 'application/pdf']
         );
     }
 
@@ -368,6 +418,24 @@ class DocumentRequestController extends Controller
         return response()->json([
             'success' => true,
             'data' => DocumentRequestResource::collection($requests)
+        ]);
+    }
+
+    public function regenerate(DocumentRequest $documentRequest): JsonResponse
+    {
+        if ($documentRequest->pdf_path) {
+            Storage::disk('public')->delete($documentRequest->pdf_path);
+        }
+
+        app(DocumentGeneratorService::class)
+            ->generate($documentRequest);
+
+        $documentRequest->refresh();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Documento regenerado com sucesso.',
+            'data' => new DocumentRequestResource($documentRequest)
         ]);
     }
 }

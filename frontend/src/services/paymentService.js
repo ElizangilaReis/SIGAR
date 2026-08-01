@@ -1,86 +1,68 @@
-import api from "./api";
+import api from './api';
 
 const paymentService = {
 
-    getAll() {
+async myPayments() {
 
-        return api
-            .get("/payments")
-            .then(res => res.data.data);
+    const response = await api.get('/student/payments');
 
-    },
+    return response.data.data;
 
-    getById(id) {
+},
 
-        return api
-            .get(`/payments/${id}`)
-            .then(res => res.data.data);
+async employeePayments() {
 
-    },
+    const response = await api.get('/employee/payments');
 
-    create(data) {
+    return response.data.data;
 
-        return api.post(
+},
 
-            "/payments",
+async confirmPayment(id) {
 
-            data
+    const response = await api.post(
+        `/student/payments/${id}/confirm`
+    );
 
-        );
+    return response.data;
 
-    },
+},
 
-    update(id, data) {
+async getReceiptBlob(paymentId) {
+    const response = await api.get(
+        `/student/payments/${paymentId}/receipt`,
+        {
+            responseType: 'blob',
+        }
+    );
 
-        return api.put(
+    return URL.createObjectURL(response.data);
+},
 
-            `/payments/${id}`,
+getReceiptViewUrl(paymentId) {
+    return `${API_URL}/student/payments/${paymentId}/receipt`;
+},
 
-            data
+async downloadReceipt(paymentId, reference) {
+    const response = await api.get(
+        `/student/payments/${paymentId}/receipt`,
+        {
+            responseType: 'blob',
+        }
+    );
 
-        );
+    const url = URL.createObjectURL(response.data);
 
-    },
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `RECIBO_${reference}.pdf`;
 
-    remove(id) {
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
 
-        return api.delete(
-
-            `/payments/${id}`
-
-        );
-
-    },
-
-    changeStatus(id, status) {
-
-        return api.patch(
-
-            `/payments/${id}/status`,
-
-            { status }
-
-        );
-
-    },
-
-    myPayments(){
-
-        return api
-            .get("/student/payments")
-            .then(res=>res.data.data);
-
-    },
-
-    employeePayments() {
-    return api
-        .get('/employee/payments')
-        .then(res => res.data.data);
-    },
-
-    changeStatus(id, status) {
-        return api.patch(`/payments/${id}/status`, { status });
-    },
+    URL.revokeObjectURL(url);
+},
 
 };
 

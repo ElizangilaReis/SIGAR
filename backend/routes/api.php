@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StudentDashboardController;
 use App\Http\Controllers\Api\EmployeeDashboardController;
 use App\Http\Controllers\Api\NotificationController;
-
+use App\Http\Controllers\VerificationController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -33,6 +33,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource(
         'employees',
         EmployeeController::class
+    );
+
+    Route::post(
+        '/admin/documents/{documentRequest}/regenerate',
+        [DocumentRequestController::class, 'regenerate']
     );
 
     Route::patch(
@@ -145,6 +150,8 @@ Route::middleware('auth:sanctum')->group(function () {
         '/settings/backup',
         [SettingController::class,'backup']
     );
+
+    Route::get('/verificar/{codigo}', [VerificationController::class, 'verify']);
         
 
     //Estudante
@@ -175,6 +182,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/student/profile', [StudentController::class, 'myProfile']);
 
+   // Rotas do estudante (mantidas)
     Route::get(
         '/student/notifications',
         [NotificationController::class, 'index']
@@ -183,6 +191,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch(
         '/student/notifications/{notification}/read',
         [NotificationController::class, 'markAsRead']
+    );
+
+    // Novas rotas reutilizáveis (student, employee e admin)
+    Route::get(
+        '/notifications',
+        [NotificationController::class, 'index']
+    );
+
+    Route::get(
+        '/notifications/unread-count',
+        [NotificationController::class, 'unreadCount']
+    );
+
+    Route::patch(
+        '/notifications/{notification}/read',
+        [NotificationController::class, 'markAsRead']
+    );
+
+    Route::patch(
+        '/notifications/read-all',
+        [NotificationController::class, 'markAllAsRead']
     );
 
      Route::get(
@@ -199,6 +228,17 @@ Route::middleware('auth:sanctum')->group(function () {
         '/student/documents/{documentRequest}/download',
         [DocumentRequestController::class, 'downloadDocument']
     );
+
+    Route::post(
+        '/student/payments/{payment}/confirm',
+        [PaymentController::class, 'confirmPayment']
+    );
+
+    Route::get(
+        '/student/payments/{payment}/receipt',
+        [PaymentController::class, 'downloadReceipt']
+    );
+
     //======================================================================
     // Funcionário
     //======================================================================

@@ -1,142 +1,154 @@
-import { useState } from "react";
+import { useEffect, useState } from 'react';
 
-import Button from "../../../components/common/Button/Button";
+import Button from '../../../components/common/Button/Button';
+import settingsService from '../../../services/settingsService';
 
 export default function Settings() {
+const [theme, setTheme] = useState(
+settingsService.getCurrentTheme()
+);
 
-    const [theme, setTheme] = useState(
+useEffect(() => {
+    settingsService.applyTheme(theme);
 
-        localStorage.getItem("theme") || "light"
-
-    );
-
-    function changeTheme(value) {
-
-        setTheme(value);
-
-        localStorage.setItem("theme", value);
-
-        document.documentElement.setAttribute(
-            "data-theme",
-            value
-        );
-
+    if (theme !== 'system') {
+        return;
     }
 
-    return (
+    const media = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+    );
 
-        <>
+    const handler = () =>
+        settingsService.applyTheme('system');
 
-            <div className="dashboard-header">
+    if (media.addEventListener) {
+        media.addEventListener('change', handler);
+    } else {
+        media.addListener(handler);
+    }
 
-                <h1>
+    return () => {
+        if (media.removeEventListener) {
+            media.removeEventListener(
+                'change',
+                handler
+            );
+        } else {
+            media.removeListener(handler);
+        }
+    };
+}, [theme]);
 
-                    Configurações
+function changeTheme(value) {
+    setTheme(value);
+    settingsService.applyTheme(value);
+}
 
-                </h1>
+return (
+    <>
+        <div className="dashboard-header">
+            <h1>Configurações</h1>
+
+            <p>
+                Personalize a sua experiência na plataforma.
+            </p>
+        </div>
+
+        <div className="settings-container">
+            <div className="settings-card">
+                <h3>Aparência</h3>
 
                 <p>
-
-                    Personalize a sua experiência na plataforma.
-
+                    Escolha o tema da plataforma.
                 </p>
 
-            </div>
-
-            <div className="settings-container">
-
-                <div className="settings-card">
-
-                    <h3>
-
-                        Aparência
-
-                    </h3>
-
-                    <p>
-
-                        Escolha o tema da plataforma.
-
-                    </p>
-
-                    <div
-                        style={{
-                            display:"flex",
-                            gap:"12px",
-                            marginTop:"20px"
-                        }}
+                <div
+                    style={{
+                        display: 'flex',
+                        gap: '12px',
+                        marginTop: '20px',
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    <Button
+                        variant={
+                            theme === 'light'
+                                ? 'primary'
+                                : 'secondary'
+                        }
+                        onClick={() =>
+                            changeTheme('light')
+                        }
                     >
+                        ☀ Claro
+                    </Button>
 
-                        <Button
-                            onClick={()=>changeTheme("light")}
-                        >
+                    <Button
+                        variant={
+                            theme === 'dark'
+                                ? 'primary'
+                                : 'secondary'
+                        }
+                        onClick={() =>
+                            changeTheme('dark')
+                        }
+                    >
+                        🌙 Escuro
+                    </Button>
 
-                            ☀ Claro
-
-                        </Button>
-
-                        <Button
-                            onClick={()=>changeTheme("dark")}
-                        >
-
-                            🌙 Escuro
-
-                        </Button>
-
-                        <Button
-                            onClick={()=>changeTheme("system")}
-                        >
-
-                            💻 Automático
-
-                        </Button>
-
-                    </div>
-
+                    <Button
+                        variant={
+                            theme === 'system'
+                                ? 'primary'
+                                : 'secondary'
+                        }
+                        onClick={() =>
+                            changeTheme('system')
+                        }
+                    >
+                        💻 Automático
+                    </Button>
                 </div>
 
-                <div className="settings-card">
-
-                    <h3>
-
-                        Idioma
-
-                    </h3>
-
-                    <p>
-
-                        Português (Angola)
-
-                    </p>
-
-                    <small>
-
-                        Brevemente será possível alterar o idioma.
-
-                    </small>
-
-                </div>
-
-                <div className="settings-card">
-
-                    <h3>
-
-                        Notificações
-
-                    </h3>
-
-                    <p>
-
-                        Em breve poderá definir como deseja receber notificações da plataforma.
-
-                    </p>
-
-                </div>
-
+                <p
+                    style={{
+                        marginTop: '16px',
+                        color: '#6b7280',
+                        fontSize: '13px',
+                    }}
+                >
+                    Tema actual:{' '}
+                    <strong>
+                        {theme === 'light'
+                            ? 'Claro'
+                            : theme === 'dark'
+                              ? 'Escuro'
+                              : 'Automático (Sistema)'}
+                    </strong>
+                </p>
             </div>
 
-        </>
+            <div className="settings-card">
+                <h3>Idioma</h3>
 
-    );
+                <p>Português (Angola)</p>
+
+                <small>
+                    Brevemente será possível alterar o idioma.
+                </small>
+            </div>
+
+            <div className="settings-card">
+                <h3>Notificações</h3>
+
+                <p>
+                    Em breve poderá definir como deseja receber notificações da plataforma.
+                </p>
+            </div>
+        </div>
+    </>
+);
+
 
 }

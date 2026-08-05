@@ -1,39 +1,30 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/admin/Sidebar/Sidebar";
 import Header from "../components/admin/Header/Header";
+import "./AdminLayout.css";
 
 export default function AdminLayout() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <div style={styles.container}>
-      <Sidebar />
+    <div className="admin-layout">
+      <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <div style={styles.main}>
-        <Header />
+      {menuOpen && (
+        <div
+          className="admin-overlay"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
 
-        <main style={styles.content}>
+      <div className="admin-main">
+        <Header setMenuOpen={setMenuOpen} />
+
+        <main className="admin-content">
           <Outlet />
         </main>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    minHeight: "100vh",
-    background: "#f1f5f9",
-  },
-
-  main: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-  },
-
-  content: {
-    flex: 1,
-    padding: "30px",
-    overflowY: "auto",
-  },
-};

@@ -1,101 +1,78 @@
-.admin-header{
-
-    height:80px;
-
+.student-header{
+    height:72px;
     background:#fff;
-
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
-
-    padding:0 35px;
-
-    border-bottom:1px solid #ececec;
-
-    box-shadow:0 2px 12px rgba(0,0,0,.04);
-
+    padding:0 24px;
+    border-bottom:1px solid #e5e7eb;
 }
 
-.admin-header h2{
+.menu-btn{
+    display:none;
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:10px;
+    background:#eef2ff;
+    color:#2563eb;
+    cursor:pointer;
+}
 
+.header-info h2{
     margin:0;
-
     color:#16213e;
-
-    font-size:28px;
-
+    font-size:24px;
 }
 
-.admin-header p{
-
-    margin-top:4px;
-
-    color:#7b8794;
-
-}
-
-.header-actions{
-
-    display:flex;
-
-    align-items:center;
-
+.header-info p{
+    margin:4px 0 0;
+    color:#64748b;
+    font-size:14px;
 }
 
 .notification-btn{
-
     position:relative;
-
-    width:44px;
-
-    height:44px;
-
+    width:42px;
+    height:42px;
     border-radius:50%;
-
     background:#f3f4f6;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
     text-decoration:none;
-
-    font-size:20px;
-
 }
 
 .notification-badge{
-
     position:absolute;
-
     top:-4px;
-
     right:-4px;
-
-    min-width:20px;
-
-    height:20px;
-
-    border-radius:50%;
-
+    min-width:18px;
+    height:18px;
+    border-radius:999px;
     background:#ef4444;
-
     color:#fff;
-
-    font-size:12px;
-
+    font-size:11px;
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
-    font-weight:600;
-
     padding:0 5px;
+}
+
+@media (max-width:768px){
+
+    .student-header{
+        padding:0 16px;
+    }
+
+    .menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .header-info h2{
+        font-size:20px;
+    }
 
 }

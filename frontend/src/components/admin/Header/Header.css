@@ -1,73 +1,85 @@
 .header {
-    height: 70px;
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 0 30px;
-
-    box-sizing: border-box;
+  height: 72px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
 }
 
 .header-left {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-button {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: #eef2ff;
+  color: #2563eb;
+  cursor: pointer;
 }
 
 .header-left h2 {
-    margin: 0;
-    font-size: 24px;
-    color: #1e293b;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 .header-left span {
-    margin-top: 3px;
-    font-size: 13px;
-    color: #64748b;
+  color: #64748b;
+  font-size: 13px;
 }
 
 .header-right {
-    display: flex;
-    align-items: center;
-    gap: 25px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+  text-align: right;
 }
 
 .user-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #1e293b;
+  display: block;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .user-role {
-    font-size: 12px;
-    color: #94a3b8;
+  color: #64748b;
 }
 
 .logout-btn {
-    padding: 10px 18px;
-
-    border: none;
-    border-radius: 8px;
-
-    background: #ef4444;
-    color: white;
-
-    cursor: pointer;
-
-    font-weight: 600;
-
-    transition: .25s;
+  padding: 10px 16px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.logout-btn:hover {
-    background: #dc2626;
+@media (max-width: 768px) {
+  .menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-info {
+    display: none;
+  }
+
+  .header {
+    padding: 0 16px;
+  }
 }

@@ -1,96 +1,87 @@
 import { NavLink } from "react-router-dom";
-
 import { logout } from "../../../services/auth";
 
 import "./StudentSidebar.css";
 
-export default function StudentSidebar() {
+export default function StudentSidebar({ open, onClose }) {
 
-    async function handleLogout(){
+    async function handleLogout() {
 
         await logout();
 
-        window.location.href="/login";
+        window.location.href = "/login";
 
     }
 
-    return(
+    return (
 
-        <aside className="sidebar">
+        <>
 
-            <div>
+            {open && (
+                <div
+                    className="sidebar-overlay"
+                    onClick={onClose}
+                />
+            )}
 
-                <div className="sidebar-logo">
+            <aside className={`sidebar ${open ? "open" : ""}`}>
 
-                    <h2>SIGAR</h2>
+                <div>
+
+                    <div className="sidebar-logo">
+
+                        <h2>SIGAR</h2>
+
+                    </div>
+
+                    <nav>
+
+                        <NavLink to="/dashboard" end onClick={onClose}>
+                            Dashboard
+                        </NavLink>
+
+                        <NavLink to="/dashboard/notifications" onClick={onClose}>
+                            Notificações
+                        </NavLink>
+
+                        <NavLink to="/dashboard/requests" onClick={onClose}>
+                            Pedidos
+                        </NavLink>
+
+                        <NavLink to="/dashboard/documents" onClick={onClose}>
+                            Documentos
+                        </NavLink>
+
+                        <NavLink to="/dashboard/my-documents" onClick={onClose}>
+                            Meus Documentos
+                        </NavLink>
+
+                        <NavLink to="/dashboard/payments" onClick={onClose}>
+                            Pagamentos
+                        </NavLink>
+
+                        <NavLink to="/dashboard/profile" onClick={onClose}>
+                            Perfil
+                        </NavLink>
+
+                        <NavLink to="/dashboard/settings" onClick={onClose}>
+                            Configurações
+                        </NavLink>
+
+                    </nav>
 
                 </div>
 
-                <nav>
+                <button
+                    className="logout-btn"
+                    onClick={handleLogout}
+                >
+                    Terminar Sessão
+                </button>
 
-                    <NavLink to="/dashboard" end>
+            </aside>
 
-                        Dashboard
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/notifications">
-                        Notificações
-                    </NavLink>
-
-                    <NavLink to="/dashboard/requests">
-
-                        Pedidos
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/documents">
-
-                        Documentos
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/my-documents">
-
-                        Meus Documentos
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/payments">
-
-                        Pagamentos
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/profile">
-
-                        Perfil
-
-                    </NavLink>
-
-                    <NavLink to="/dashboard/settings">
-
-                        Configurações
-
-                    </NavLink>
-
-                </nav>
-
-            </div>
-
-            <button
-
-                className="logout-btn"
-
-                onClick={handleLogout}
-
-            >
-
-                Terminar Sessão
-
-            </button>
-
-        </aside>
+        </>
 
     );
 

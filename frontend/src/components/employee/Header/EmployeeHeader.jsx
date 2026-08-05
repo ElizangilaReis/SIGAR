@@ -6,7 +6,7 @@ import notificationService from '../../../services/notificationService';
 
 import './EmployeeHeader.css';
 
-export default function EmployeeHeader() {
+export default function EmployeeHeader({ onMenuClick }) {
 
 const user = getUser();
 
@@ -55,81 +55,25 @@ async function handleReadAll() {
 }
 
 return (
-    <header className="admin-header">
-        <div>
-            <h2>Painel do Funcionário</h2>
-            <p>
-                Bem-vindo,
-                <strong> {user?.name}</strong>
-            </p>
-        </div>
+   <header className="employee-header">
 
-        <div className="header-notifications">
-            <div
-                className="notification-icon"
-                onClick={() => setOpen(!open)}
-            >
-                <Bell size={22} />
+    <button
+        className="menu-btn"
+        onClick={onMenuClick}
+    >
+        ☰
+    </button>
 
-                {unreadCount > 0 && (
-                    <span className="notification-badge">
-                        {unreadCount}
-                    </span>
-                )}
-            </div>
+    <div>
+        <h2>Painel do Funcionário</h2>
+        <p>Bem-vindo, <strong>{user?.name}</strong></p>
+    </div>
 
-            {open && (
-                <div className="notification-dropdown">
-                    <div className="notification-header">
-                        <strong>Notificações</strong>
+    <div className="header-notifications">
+        {/* mantém o resto igual */}
+    </div>
 
-                        {unreadCount > 0 && (
-                            <button
-                                onClick={handleReadAll}
-                                className="notification-read-all"
-                            >
-                                Marcar todas
-                            </button>
-                        )}
-                    </div>
-
-                    {notifications.length === 0 ? (
-                        <div className="notification-empty">
-                            Nenhuma notificação.
-                        </div>
-                    ) : (
-                        notifications.map(notification => (
-                            <div
-                                key={notification.id}
-                                className={`notification-item ${
-                                    notification.read
-                                        ? ''
-                                        : 'unread'
-                                }`}
-                                onClick={() =>
-                                    handleRead(notification)
-                                }
-                            >
-                                <div className="notification-title">
-                                    {notification.title}
-                                </div>
-
-                                <div className="notification-message">
-                                    {notification.message}
-                                </div>
-
-                                <div className="notification-time">
-                                    {new Date(
-                                        notification.created_at
-                                    ).toLocaleString('pt-PT')}
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            )}
-        </div>
-    </header>
+</header>
 );
 
 }

@@ -70,6 +70,17 @@ export default function AdminDashboard() {
 
     }
 
+    const safe = {
+        students: dashboard.students || 0,
+        employees: dashboard.employees || 0,
+        document_requests: dashboard.document_requests || 0,
+        payments: dashboard.payments || 0,
+        pending_requests: dashboard.pending_requests || 0,
+        processing_requests: dashboard.processing_requests || 0,
+        delivered_requests: dashboard.delivered_requests || 0,
+        total_revenue: dashboard.total_revenue || 0,
+        };
+
     return (
 
         <>

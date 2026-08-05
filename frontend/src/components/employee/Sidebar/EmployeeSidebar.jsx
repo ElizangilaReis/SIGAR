@@ -1,10 +1,9 @@
 import { NavLink } from "react-router-dom";
-
 import { logout } from "../../../services/auth";
 
 import "./EmployeeSidebar.css";
 
-export default function EmployeeSidebar() {
+export default function EmployeeSidebar({ open, onClose }) {
 
     async function handleLogout(){
 
@@ -16,77 +15,69 @@ export default function EmployeeSidebar() {
 
     return(
 
-        <aside className="sidebar">
+        <>
 
-            <div>
+            {open && (
+                <div
+                    className="sidebar-overlay"
+                    onClick={onClose}
+                />
+            )}
 
-                <div className="sidebar-logo">
+            <aside className={`sidebar ${open ? "open" : ""}`}>
 
-                    <h2>SIGAR</h2>
+                <div>
+
+                    <div className="sidebar-logo">
+
+                        <h2>SIGAR</h2>
+
+                    </div>
+
+                    <nav>
+
+                        <NavLink to="/employee" end onClick={onClose}>
+                            Dashboard
+                        </NavLink>
+
+                        <NavLink to="/employee/requests" onClick={onClose}>
+                            Pedidos
+                        </NavLink>
+
+                        <NavLink to="/employee/payments" onClick={onClose}>
+                            Pagamentos
+                        </NavLink>
+
+                        <NavLink to="/employee/documents" onClick={onClose}>
+                            Documentos Prontos
+                        </NavLink>
+
+                        <NavLink to="/employee/reports" onClick={onClose}>
+                            Relatórios
+                        </NavLink>
+
+                        <NavLink to="/employee/profile" onClick={onClose}>
+                            Perfil
+                        </NavLink>
+
+                        <NavLink to="/employee/settings" onClick={onClose}>
+                            Configurações
+                        </NavLink>
+
+                    </nav>
 
                 </div>
 
-                <nav>
+                <button
+                    className="logout-btn"
+                    onClick={handleLogout}
+                >
+                    Terminar Sessão
+                </button>
 
-                    <NavLink to="/employee" end>
+            </aside>
 
-                        Dashboard
-
-                    </NavLink>
-
-                    <NavLink to="/employee/requests">
-
-                        Pedidos
-
-                    </NavLink>
-
-                    <NavLink to="/employee/payments">
-
-                        Pagamentos
-
-                    </NavLink>
-
-                    <NavLink to="/employee/documents">
-
-                        Documentos Prontos
-
-                    </NavLink>
-
-                    <NavLink to="/employee/reports">
-
-                        Relatórios
-
-                    </NavLink>
-
-                    <NavLink to="/employee/profile">
-
-                        Perfil
-
-                    </NavLink>
-
-                    <NavLink to="/employee/settings">
-
-                        Configurações
-
-                    </NavLink>
-
-                </nav>
-
-            </div>
-
-            <button
-
-                className="logout-btn"
-
-                onClick={handleLogout}
-
-            >
-
-                Terminar Sessão
-
-            </button>
-
-        </aside>
+        </>
 
     );
 

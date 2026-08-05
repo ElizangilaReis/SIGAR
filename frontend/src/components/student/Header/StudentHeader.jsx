@@ -1,93 +1,56 @@
 import { useEffect, useState } from 'react';
-
+import { FaBars } from 'react-icons/fa';
 import { getUser } from '../../../services/auth';
 import notificationService from '../../../services/notificationService';
-
 import './StudentHeader.css';
 
-export default function StudentHeader() {
+export default function StudentHeader({ onMenuClick }) {
 
-const user = getUser();
+    const user = getUser();
+    const [unread, setUnread] = useState(0);
 
-const [unread, setUnread] = useState(0);
+    useEffect(() => {
+        loadNotifications();
+    }, []);
 
-useEffect(() => {
-
-    loadNotifications();
-
-}, []);
-
-async function loadNotifications() {
-
-    try {
-
-        const notifications = await notificationService.getAll();
-
-        setUnread(
-
-            notifications.filter(notification => !notification.read).length
-
-        );
-
-    } catch {
-
-        setUnread(0);
-
+    async function loadNotifications() {
+        try {
+            const notifications = await notificationService.getAll();
+            setUnread(
+                notifications.filter(notification => !notification.read).length
+            );
+        } catch {
+            setUnread(0);
+        }
     }
 
-}
+    return (
+        <header className="student-header">
 
-return (
+            <button
+                className="menu-btn"
+                onClick={onMenuClick}
+            >
+                <FaBars />
+            </button>
 
-    <header className="admin-header">
-
-        <div>
-
-            <h2>Painel do Estudante</h2>
-
-            <p>
-
-                Bem-vindo,
-
-                <strong> {user?.name}</strong>
-
-            </p>
-
-        </div>
-
-        <div className="header-actions">
+            <div className="header-info">
+                <h2>Painel do Estudante</h2>
+                <p>Bem-vindo, <strong>{user?.name}</strong></p>
+            </div>
 
             <a
-
                 href="/dashboard/notifications"
-
                 className="notification-btn"
-
             >
-
                 🔔
-
-                {
-
-                    unread > 0 && (
-
-                        <span className="notification-badge">
-
-                            {unread}
-
-                        </span>
-
-                    )
-
-                }
-
+                {unread > 0 && (
+                    <span className="notification-badge">
+                        {unread}
+                    </span>
+                )}
             </a>
 
-        </div>
-
-    </header>
-
-);
-
+        </header>
+    );
 }
-

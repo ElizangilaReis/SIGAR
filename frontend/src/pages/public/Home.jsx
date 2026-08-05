@@ -223,7 +223,7 @@ export default function Home() {
 
           <div className="about-image">
             <img
-              src="/images/dashboard-preview.png"
+              src="/images/dashboard.png"
               alt="Dashboard do SIGAR"
             />
           </div>

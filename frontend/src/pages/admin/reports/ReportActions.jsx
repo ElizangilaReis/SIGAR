@@ -1,76 +1,74 @@
 import Button from "../../../components/common/Button/Button";
 
-import reportService from "../../../services/reportService";
+export default function ReportActions({
+    onExportStudentsPdf,
+    onExportEmployeesPdf,
+    onExportRequestsPdf,
+    onExportPaymentsPdf,
+    onExportStudentsExcel,
+    onExportEmployeesExcel,
+    onExportRequestsExcel,
+    onExportPaymentsExcel
+}) {
+    return (
+        <div className="report-actions">
 
-export default function ReportActions(){
+            <Button
+                variant="secondary"
+                onClick={onExportStudentsPdf}
+            >
+                PDF Estudantes
+            </Button>
 
-return(
+            <Button
+                variant="secondary"
+                onClick={onExportEmployeesPdf}
+            >
+                PDF Funcionários
+            </Button>
 
-<div
-style={{
+            <Button
+                variant="secondary"
+                onClick={onExportRequestsPdf}
+            >
+                PDF Pedidos
+            </Button>
 
-display:"grid",
+            <Button
+                variant="secondary"
+                onClick={onExportPaymentsPdf}
+            >
+                PDF Pagamentos
+            </Button>
 
-gridTemplateColumns:"repeat(4,1fr)",
+            <Button
+                variant="secondary"
+                onClick={onExportStudentsExcel}
+            >
+                Excel Estudantes
+            </Button>
 
-gap:20,
+            <Button
+                variant="secondary"
+                onClick={onExportEmployeesExcel}
+            >
+                Excel Funcionários
+            </Button>
 
-marginTop:30
+            <Button
+                variant="secondary"
+                onClick={onExportRequestsExcel}
+            >
+                Excel Pedidos
+            </Button>
 
-}}
+            <Button
+                variant="secondary"
+                onClick={onExportPaymentsExcel}
+            >
+                Excel Pagamentos
+            </Button>
 
->
-
-<Button onClick={reportService.exportStudentsPdf}>
-
-Estudantes PDF
-
-</Button>
-
-<Button onClick={reportService.exportStudentsExcel}>
-
-Estudantes Excel
-
-</Button>
-
-<Button onClick={reportService.exportEmployeesPdf}>
-
-Funcionários PDF
-
-</Button>
-
-<Button onClick={reportService.exportEmployeesExcel}>
-
-Funcionários Excel
-
-</Button>
-
-<Button onClick={reportService.exportRequestsPdf}>
-
-Pedidos PDF
-
-</Button>
-
-<Button onClick={reportService.exportRequestsExcel}>
-
-Pedidos Excel
-
-</Button>
-
-<Button onClick={reportService.exportPaymentsPdf}>
-
-Pagamentos PDF
-
-</Button>
-
-<Button onClick={reportService.exportPaymentsExcel}>
-
-Pagamentos Excel
-
-</Button>
-
-</div>
-
-);
-
+        </div>
+    );
 }

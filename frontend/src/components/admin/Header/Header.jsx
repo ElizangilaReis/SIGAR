@@ -1,8 +1,9 @@
 import { FaBars } from "react-icons/fa";
 import "./Header.css";
+
 import { logout, getUser } from "../../../services/auth";
 
-export default function Header({ setMenuOpen }) {
+export default function Header({ menuOpen, toggleMenu }) {
   const user = getUser();
 
   function handleLogout() {
@@ -12,10 +13,15 @@ export default function Header({ setMenuOpen }) {
 
   return (
     <header className="header">
+
       <div className="header-left">
+
         <button
+          type="button"
           className="menu-button"
-          onClick={() => setMenuOpen(true)}
+          onClick={toggleMenu}
+          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={menuOpen}
         >
           <FaBars />
         </button>
@@ -24,18 +30,31 @@ export default function Header({ setMenuOpen }) {
           <h2>SIGAR</h2>
           <span>Painel Administrativo</span>
         </div>
+
       </div>
 
       <div className="header-right">
+
         <div className="user-info">
-          <span className="user-name">{user?.name}</span>
-          <small className="user-role">Administrador</small>
+          <span className="user-name">
+            {user?.name}
+          </span>
+
+          <small className="user-role">
+            Administrador
+          </small>
         </div>
 
-        <button className="logout-btn" onClick={handleLogout}>
+        <button
+          type="button"
+          className="logout-btn"
+          onClick={handleLogout}
+        >
           Sair
         </button>
+
       </div>
+
     </header>
   );
 }

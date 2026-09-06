@@ -17,7 +17,6 @@ import PaymentReport from "./PaymentReport";
 import "./Reports.css";
 
 export default function Reports() {
-
     const [loading, setLoading] = useState(true);
 
     const [dashboard, setDashboard] = useState(null);
@@ -27,237 +26,251 @@ export default function Reports() {
     const [activeTab, setActiveTab] = useState("students");
 
     useEffect(() => {
-
         loadDashboard();
-
     }, []);
 
     async function loadDashboard() {
-
         try {
-
             setLoading(true);
 
             const [
-
-                dashboard,
-
-                charts
-
+                dashboardData,
+                chartsData
             ] = await Promise.all([
-
                 reportService.dashboard(),
-
                 reportService.charts()
-
             ]);
 
-            setDashboard(dashboard);
-
-            setCharts(charts);
+            setDashboard(dashboardData);
+            setCharts(chartsData);
 
         } catch (error) {
+            console.error(
+                "Erro ao carregar relatórios:",
+                error
+            );
 
-            console.error(error);
+            setDashboard(null);
+            setCharts(null);
 
         } finally {
-
             setLoading(false);
+        }
+    }
 
+    function formatAmount(amount) {
+        if (
+            amount === null ||
+            amount === undefined ||
+            amount === ""
+        ) {
+            return "0 Kz";
         }
 
+        const normalizedAmount =
+            typeof amount === "string"
+                ? amount.replace(",", ".").trim()
+                : amount;
+
+        const value = Number(normalizedAmount);
+
+        if (!Number.isFinite(value)) {
+            return "0 Kz";
+        }
+
+        return `${value.toLocaleString("pt-PT", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        })} Kz`;
+    }
+
+    function normalizeDashboard(data) {
+        if (!data) {
+            return data;
+        }
+
+        const normalized = {
+            ...data
+        };
+
+        return normalized;
+    }
+
+    function normalizeCharts(data) {
+        if (!data) {
+            return data;
+        }
+
+        return data;
+    }
+
+    async function handleExport(exportFunction) {
+        try {
+            await exportFunction();
+        } catch (error) {
+            console.error(
+                "Erro ao exportar relatório:",
+                error
+            );
+        }
     }
 
     if (loading) {
-
         return <Loading />;
-
     }
 
+    const normalizedDashboard =
+        normalizeDashboard(dashboard);
+
+    const normalizedCharts =
+        normalizeCharts(charts);
+
     return (
-
         <>
-
             <PageHeader
-
                 title="Relatórios"
-
                 subtitle="Indicadores e relatórios do sistema."
-
             />
 
-            {
+            {normalizedDashboard && (
+                <DashboardCards
+                    dashboard={normalizedDashboard}
+                />
+            )}
 
-                dashboard && (
+            {normalizedCharts && (
+                <DashboardCharts
+                    charts={normalizedCharts}
+                />
+            )}
 
-                    <DashboardCards
+            <ReportActions
 
-                        dashboard={dashboard}
+                onExportStudentsPdf={() =>
+                    handleExport(
+                        reportService.exportStudentsPdf
+                    )
+                }
 
-                    />
+                onExportEmployeesPdf={() =>
+                    handleExport(
+                        reportService.exportEmployeesPdf
+                    )
+                }
 
-                )
+                onExportRequestsPdf={() =>
+                    handleExport(
+                        reportService.exportRequestsPdf
+                    )
+                }
 
-            }
+                onExportPaymentsPdf={() =>
+                    handleExport(
+                        reportService.exportPaymentsPdf
+                    )
+                }
 
-            {
+                onExportStudentsExcel={() =>
+                    handleExport(
+                        reportService.exportStudentsExcel
+                    )
+                }
 
-                charts && (
+                onExportEmployeesExcel={() =>
+                    handleExport(
+                        reportService.exportEmployeesExcel
+                    )
+                }
 
-                    <DashboardCharts
+                onExportRequestsExcel={() =>
+                    handleExport(
+                        reportService.exportRequestsExcel
+                    )
+                }
 
-                        charts={charts}
+                onExportPaymentsExcel={() =>
+                    handleExport(
+                        reportService.exportPaymentsExcel
+                    )
+                }
 
-                    />
-
-                )
-
-            }
-
-            <ReportActions />
+            />
 
             <div className="report-tabs">
 
                 <button
-
+                    type="button"
                     className={
-
                         activeTab === "students"
-
                             ? "active"
-
                             : ""
-
                     }
-
                     onClick={() =>
-
                         setActiveTab("students")
-
                     }
-
                 >
-
                     Estudantes
-
                 </button>
 
                 <button
-
+                    type="button"
                     className={
-
                         activeTab === "employees"
-
                             ? "active"
-
                             : ""
-
                     }
-
                     onClick={() =>
-
                         setActiveTab("employees")
-
                     }
-
                 >
-
                     Funcionários
-
                 </button>
 
                 <button
-
+                    type="button"
                     className={
-
                         activeTab === "requests"
-
                             ? "active"
-
                             : ""
-
                     }
-
                     onClick={() =>
-
                         setActiveTab("requests")
-
                     }
-
                 >
-
                     Pedidos
-
                 </button>
 
                 <button
-
+                    type="button"
                     className={
-
                         activeTab === "payments"
-
                             ? "active"
-
                             : ""
-
                     }
-
                     onClick={() =>
-
                         setActiveTab("payments")
-
                     }
-
                 >
-
                     Pagamentos
-
                 </button>
 
             </div>
 
-            {
+            {activeTab === "students" && (
+                <StudentReport />
+            )}
 
-                activeTab === "students" && (
+            {activeTab === "employees" && (
+                <EmployeeReport />
+            )}
 
-                    <StudentReport />
+            {activeTab === "requests" && (
+                <DocumentRequestReport />
+            )}
 
-                )
-
-            }
-
-            {
-
-                activeTab === "employees" && (
-
-                    <EmployeeReport />
-
-                )
-
-            }
-
-            {
-
-                activeTab === "requests" && (
-
-                    <DocumentRequestReport />
-
-                )
-
-            }
-
-            {
-
-                activeTab === "payments" && (
-
-                    <PaymentReport />
-
-                )
-
-            }
-
+            {activeTab === "payments" && (
+                <PaymentReport />
+            )}
         </>
-
     );
-
 }

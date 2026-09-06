@@ -1,125 +1,133 @@
-import {
+import "./Reports.css";
 
-    ResponsiveContainer,
+export default function DashboardCharts({ charts }) {
+    const payments = Array.isArray(charts?.payments)
+        ? charts.payments
+        : [];
 
-    BarChart,
+    const requests = Array.isArray(charts?.requests)
+        ? charts.requests
+        : [];
 
-    Bar,
+    function getMaxValue(data) {
+        if (!data.length) {
+            return 1;
+        }
 
-    CartesianGrid,
+        const values = data.map((item) => {
+            const value = Number(item?.value);
 
-    Tooltip,
+            return Number.isFinite(value) ? value : 0;
+        });
 
-    XAxis,
+        const max = Math.max(...values);
 
-    YAxis
+        return max > 0 ? max : 1;
+    }
 
-} from "recharts";
+    function formatValue(value) {
+        const number = Number(value);
 
-export default function DashboardCharts({
+        if (!Number.isFinite(number)) {
+            return 0;
+        }
 
-    charts
+        return number;
+    }
 
-}) {
+    function MonthlyChart({
+        title,
+        data,
+        emptyMessage
+    }) {
+        const maxValue = getMaxValue(data);
+
+        if (!data.length) {
+            return (
+                <div className="chart-box">
+                    <h3>{title}</h3>
+
+                    <div className="chart-empty">
+                        {emptyMessage}
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="chart-box">
+
+                <h3>{title}</h3>
+
+                <div
+                    className="monthly-chart"
+                    aria-label={title}
+                >
+
+                    {data.map((item, index) => {
+
+                        const value =
+                            formatValue(item?.value);
+
+                        const height =
+                            value > 0
+                                ? Math.max(
+                                    (value / maxValue) * 100,
+                                    8
+                                )
+                                : 2;
+
+                        return (
+                            <div
+                                className="chart-column"
+                                key={`${item?.name}-${index}`}
+                            >
+
+                                <div className="chart-value">
+                                    {value}
+                                </div>
+
+                                <div className="chart-bar-area">
+
+                                    <div
+                                        className="chart-bar"
+                                        style={{
+                                            height: `${height}%`
+                                        }}
+                                        title={`${item?.name}: ${value}`}
+                                    />
+
+                                </div>
+
+                                <span className="chart-label">
+                                    {item?.name || "-"}
+                                </span>
+
+                            </div>
+                        );
+                    })}
+
+                </div>
+
+            </div>
+        );
+    }
 
     return (
+        <div className="dashboard-charts">
 
-        <div className="charts-grid">
+            <MonthlyChart
+                title="Pagamentos por Mês"
+                data={payments}
+                emptyMessage="Não existem dados de pagamentos."
+            />
 
-            <div className="chart-box">
-
-                <h3>
-
-                    Pagamentos por Mês
-
-                </h3>
-
-                <ResponsiveContainer
-
-                    width="100%"
-
-                    height={300}
-
-                >
-
-                    <BarChart
-
-                        data={charts.payments_per_month || []}
-
-                    >
-
-                        <CartesianGrid />
-
-                        <XAxis
-
-                            dataKey="month"
-
-                        />
-
-                        <YAxis />
-
-                        <Tooltip />
-
-                        <Bar
-
-                            dataKey="total"
-
-                        />
-
-                    </BarChart>
-
-                </ResponsiveContainer>
-
-            </div>
-
-            <div className="chart-box">
-
-                <h3>
-
-                    Pedidos por Mês
-
-                </h3>
-
-                <ResponsiveContainer
-
-                    width="100%"
-
-                    height={300}
-
-                >
-
-                    <BarChart
-
-                        data={charts.requests_per_month || []}
-
-                    >
-
-                        <CartesianGrid />
-
-                        <XAxis
-
-                            dataKey="month"
-
-                        />
-
-                        <YAxis />
-
-                        <Tooltip />
-
-                        <Bar
-
-                            dataKey="total"
-
-                        />
-
-                    </BarChart>
-
-                </ResponsiveContainer>
-
-            </div>
+            <MonthlyChart
+                title="Pedidos por Mês"
+                data={requests}
+                emptyMessage="Não existem dados de pedidos."
+            />
 
         </div>
-
     );
-
 }

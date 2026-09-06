@@ -5,36 +5,28 @@ import "./EmployeeSidebar.css";
 
 export default function EmployeeSidebar({ open, onClose }) {
 
-    async function handleLogout(){
-
+    async function handleLogout() {
         await logout();
-
-        window.location.href="/login";
-
+        window.location.href = "/login";
     }
 
-    return(
-
+    return (
         <>
-
             {open && (
                 <div
-                    className="sidebar-overlay"
+                    className="employee-sidebar-overlay"
                     onClick={onClose}
                 />
             )}
 
-            <aside className={`sidebar ${open ? "open" : ""}`}>
+            <aside className={`employee-sidebar ${open ? "open" : ""}`}>
 
                 <div>
-
-                    <div className="sidebar-logo">
-
+                    <div className="employee-sidebar-logo">
                         <h2>SIGAR</h2>
-
                     </div>
 
-                    <nav>
+                    <nav className="employee-sidebar-nav">
 
                         <NavLink to="/employee" end onClick={onClose}>
                             Dashboard
@@ -65,20 +57,17 @@ export default function EmployeeSidebar({ open, onClose }) {
                         </NavLink>
 
                     </nav>
-
                 </div>
 
                 <button
-                    className="logout-btn"
+                    type="button"
+                    className="employee-logout-btn"
                     onClick={handleLogout}
                 >
                     Terminar Sessão
                 </button>
 
             </aside>
-
         </>
-
     );
-
 }

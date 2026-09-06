@@ -40,60 +40,117 @@ export default function Students() {
 
     const perPage = 10;
 
+
     useEffect(() => {
 
         loadData();
 
     }, []);
 
-   
+
     async function loadData() {
+
+        try {
+
+            setLoading(true);
+
+            const [
+
+                students,
+
+                faculties,
+
+                courses
+
+            ] = await Promise.all([
+
+                studentService.getAll(),
+
+                facultyService.getAll(),
+
+                courseService.getAll()
+
+            ]);
+
+
+            setStudents(
+
+                Array.isArray(students)
+
+                    ? students
+
+                    : students?.data?.data || students?.data || []
+
+            );
+
+
+            setFaculties(
+
+                Array.isArray(faculties)
+
+                    ? faculties
+
+                    : faculties?.data?.data || faculties?.data || []
+
+            );
+
+
+            setCourses(
+
+                Array.isArray(courses)
+
+                    ? courses
+
+                    : courses?.data?.data || courses?.data || []
+
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Erro ao carregar os dados.");
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+
+    async function handleSave(data) {
 
     try {
 
         setLoading(true);
 
-        const [
+        if (selectedStudent) {
 
-            students,
+            await studentService.update(
+                selectedStudent.id,
+                data
+            );
 
-            faculties,
+        } else {
 
-            courses
+            await studentService.create(data);
 
-        ] = await Promise.all([
+        }
 
-            studentService.getAll(),
+        await loadData();
 
-            facultyService.getAll(),
+        setOpenForm(false);
 
-            courseService.getAll()
-
-        ]);
-
-        setStudents(
-            Array.isArray(students)
-                ? students
-                : students?.data?.data || students?.data || []
-        );
-
-        setFaculties(
-            Array.isArray(faculties)
-                ? faculties
-                : faculties?.data?.data || faculties?.data || []
-        );
-
-        setCourses(
-            Array.isArray(courses)
-                ? courses
-                : courses?.data?.data || courses?.data || []
-        );
+        setSelectedStudent(null);
 
     } catch (error) {
 
         console.error(error);
 
-        alert("Erro ao carregar os dados.");
+        throw error;
 
     } finally {
 
@@ -103,47 +160,6 @@ export default function Students() {
 
 }
 
-    async function handleSave(data) {
-
-        try {
-
-            setLoading(true);
-
-            if (selectedStudent) {
-
-                await studentService.update(
-
-                    selectedStudent.id,
-
-                    data
-
-                );
-
-            } else {
-
-                await studentService.create(data);
-
-            }
-
-            await loadData();
-
-            setOpenForm(false);
-
-            setSelectedStudent(null);
-
-        } catch (error) {
-
-    console.error(error.response.data);
-
-    alert(JSON.stringify(error.response.data, null, 2));
-
-} finally {
-
-            setLoading(false);
-
-        }
-
-    }
 
     async function handleStatus() {
 
@@ -163,6 +179,7 @@ export default function Students() {
 
             );
 
+
             await loadData();
 
             setConfirmOpen(false);
@@ -170,6 +187,7 @@ export default function Students() {
             setStudentSelected(null);
 
             setStudentAction("");
+
 
         } catch (error) {
 
@@ -185,29 +203,36 @@ export default function Students() {
 
     }
 
+
     const filteredStudents = useMemo(() => {
 
         return students.filter(student =>
 
             student.user?.name
+
                 ?.toLowerCase()
+
                 .includes(search.toLowerCase())
 
             ||
 
             student.student_number
+
                 ?.toLowerCase()
+
                 .includes(search.toLowerCase())
 
         );
 
     }, [students, search]);
 
+
     const totalPages = Math.ceil(
 
         filteredStudents.length / perPage
 
     );
+
 
     const paginatedStudents = useMemo(() => {
 
@@ -227,7 +252,9 @@ export default function Students() {
 
         page
 
-    ]);  
+    ]);
+
+
     return (
 
         <>
@@ -250,6 +277,7 @@ export default function Students() {
 
             />
 
+
             <SearchBar
 
                 value={search}
@@ -259,6 +287,7 @@ export default function Students() {
                 placeholder="Pesquisar estudante..."
 
             />
+
 
             {
 
@@ -396,35 +425,56 @@ export default function Students() {
 
                                                 </Button>
 
+
                                                 {
-                                                  student.user?.status === "Activo" ? (
 
-                                                      <Button
-                                                          variant="danger"
-                                                          onClick={() => {
-                                                              setStudentAction("desactivar");
-                                                              setStudentSelected(student);
-                                                              setConfirmOpen(true);
-                                                          }}
-                                                      >
-                                                          Desactivar
-                                                      </Button>
+                                                    student.user?.status === "Activo" ? (
 
-                                                  ) : (
+                                                        <Button
 
-                                                      <Button
-                                                          variant="success"
-                                                          onClick={() => {
-                                                              setStudentAction("activar");
-                                                              setStudentSelected(student);
-                                                              setConfirmOpen(true);
-                                                          }}
-                                                      >
-                                                          Activar
-                                                      </Button>
+                                                            variant="danger"
 
-                                                  )
-                                              }
+                                                            onClick={() => {
+
+                                                                setStudentAction("desactivar");
+
+                                                                setStudentSelected(student);
+
+                                                                setConfirmOpen(true);
+
+                                                            }}
+
+                                                        >
+
+                                                            Desactivar
+
+                                                        </Button>
+
+                                                    ) : (
+
+                                                        <Button
+
+                                                            variant="success"
+
+                                                            onClick={() => {
+
+                                                                setStudentAction("activar");
+
+                                                                setStudentSelected(student);
+
+                                                                setConfirmOpen(true);
+
+                                                            }}
+
+                                                        >
+
+                                                            Activar
+
+                                                        </Button>
+
+                                                    )
+
+                                                }
 
                                             </div>
 
@@ -444,6 +494,7 @@ export default function Students() {
 
             }
 
+
             <Pagination
 
                 currentPage={page}
@@ -453,6 +504,7 @@ export default function Students() {
                 onPageChange={setPage}
 
             />
+
 
             <StudentForm
 
@@ -477,6 +529,7 @@ export default function Students() {
                 onSubmit={handleSave}
 
             />
+
 
             <ConfirmDialog
 

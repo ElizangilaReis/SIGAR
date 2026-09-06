@@ -15,31 +15,20 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
 
     const [dashboard, setDashboard] = useState({
-
         students: 0,
-
         employees: 0,
-
         document_requests: 0,
-
         payments: 0,
-
         pending_requests: 0,
-
         processing_requests: 0,
-
-        delivered_requests: 0,
-
-        total_revenue: 0,
-
+        completed_requests: 0,
+        total_received: 0,
+        total_pending: 0,
         recent_activities: []
-
     });
 
     useEffect(() => {
-
         loadDashboard();
-
     }, []);
 
     async function loadDashboard() {
@@ -50,271 +39,258 @@ export default function AdminDashboard() {
 
             const data = await reportService.dashboard();
 
-            setDashboard(data);
+            setDashboard({
+                students: data?.students ?? 0,
+                employees: data?.employees ?? 0,
+                document_requests: data?.document_requests ?? 0,
+                payments: data?.payments ?? 0,
+                pending_requests: data?.pending_requests ?? 0,
+                processing_requests: data?.processing_requests ?? 0,
+                completed_requests: data?.completed_requests ?? 0,
+                total_received: data?.total_received ?? 0,
+                total_pending: data?.total_pending ?? 0,
+                recent_activities: Array.isArray(data?.recent_activities)
+                    ? data.recent_activities
+                    : []
+            });
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Erro ao carregar dashboard:",
+                error
+            );
 
         } finally {
 
             setLoading(false);
 
         }
+    }
 
+    function formatAmount(amount) {
+
+        if (
+            amount === null ||
+            amount === undefined ||
+            amount === ""
+        ) {
+            return "0 Kz";
+        }
+
+        const value =
+            typeof amount === "string"
+                ? Number(amount.replace(",", "."))
+                : Number(amount);
+
+        if (!Number.isFinite(value)) {
+            return "0 Kz";
+        }
+
+        return `${value.toLocaleString("pt-PT", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        })} Kz`;
     }
 
     if (loading) {
-
         return <Loading />;
-
     }
 
-    const safe = {
-        students: dashboard.students || 0,
-        employees: dashboard.employees || 0,
-        document_requests: dashboard.document_requests || 0,
-        payments: dashboard.payments || 0,
-        pending_requests: dashboard.pending_requests || 0,
-        processing_requests: dashboard.processing_requests || 0,
-        delivered_requests: dashboard.delivered_requests || 0,
-        total_revenue: dashboard.total_revenue || 0,
-        };
-
     return (
-
         <>
 
             <div className="dashboard-header">
 
-                <h1>Dashboard Administrativo</h1>
+                <h1>
+                    Dashboard Administrativo
+                </h1>
 
                 <p>
-
                     Bem-vindo ao Sistema Integrado de Gestão Académica e Requerimentos.
-
                 </p>
 
             </div>
 
+            {/* =========================
+                INDICADORES PRINCIPAIS
+            ========================= */}
+
             <div className="dashboard-cards">
 
                 <StatCard
-
                     title="Estudantes"
-
                     value={dashboard.students}
-
                     subtitle="Registados"
-
                 />
 
                 <StatCard
-
                     title="Funcionários"
-
                     value={dashboard.employees}
-
                     subtitle="Registados"
-
                 />
 
                 <StatCard
-
                     title="Pedidos"
-
                     value={dashboard.document_requests}
-
                     subtitle="Total"
-
                 />
 
                 <StatCard
-
                     title="Pagamentos"
-
                     value={dashboard.payments}
-
                     subtitle="Registados"
-
                 />
 
             </div>
+
+            {/* =========================
+                ESTADO DOS PEDIDOS
+            ========================= */}
 
             <div className="dashboard-cards">
 
                 <StatCard
-
                     title="Pendentes"
-
                     value={dashboard.pending_requests}
-
                     subtitle="Pedidos"
-
                 />
 
                 <StatCard
-
                     title="Em Processamento"
-
                     value={dashboard.processing_requests}
-
                     subtitle="Pedidos"
-
                 />
 
                 <StatCard
-
                     title="Entregues"
-
-                    value={dashboard.delivered_requests}
-
+                    value={dashboard.completed_requests}
                     subtitle="Pedidos"
-
                 />
 
                 <StatCard
-
-                    title="Receita"
-
-                    value={`${dashboard.total_revenue} Kz`}
-
-                    subtitle="Pagamentos"
-
+                    title="Receita Recebida"
+                    value={formatAmount(dashboard.total_received)}
+                    subtitle="Pagamentos pagos"
                 />
 
             </div>
+
+            {/* =========================
+                RECEITA
+            ========================= */}
+
+            <div className="dashboard-cards">
+
+                <StatCard
+                    title="Receita Pendente"
+                    value={formatAmount(dashboard.total_pending)}
+                    subtitle="Pagamentos pendentes"
+                />
+
+            </div>
+
+            {/* =========================
+                ACTIVIDADES / ACESSO
+            ========================= */}
 
             <div className="dashboard-row">
 
                 <div className="dashboard-panel">
 
-                    <h3>Últimas Actividades</h3>
+                    <h3>
+                        Últimas Actividades
+                    </h3>
 
-                    {
+                    {dashboard.recent_activities.length > 0 ? (
 
-                        dashboard.recent_activities?.length > 0 ? (
+                        <ul className="activity-list">
 
-                            <ul className="activity-list">
+                            {dashboard.recent_activities.map(
+                                (activity) => (
 
-                                {
+                                    <li key={activity.id}>
 
-                                    dashboard.recent_activities.map(activity => (
+                                        <strong>
+                                            {activity.reference || "-"}
+                                        </strong>
 
-                                        <li key={activity.id}>
+                                        <br />
 
-                                            <strong>
+                                        {activity.student || "-"}
 
-                                                {activity.reference}
+                                        <br />
 
-                                            </strong>
+                                        <small>
+                                            {activity.status || "-"}
+                                        </small>
 
-                                            <br />
+                                    </li>
 
-                                            {activity.student}
+                                )
+                            )}
 
-                                            <br />
+                        </ul>
 
-                                            <small>
+                    ) : (
 
-                                                {activity.status}
+                        <p>
+                            Nenhuma actividade encontrada.
+                        </p>
 
-                                            </small>
-
-                                        </li>
-
-                                    ))
-
-                                }
-
-                            </ul>
-
-                        ) : (
-
-                            <p>
-
-                                Nenhuma actividade encontrada.
-
-                            </p>
-
-                        )
-
-                    }
+                    )}
 
                 </div>
 
                 <div className="dashboard-panel">
 
-                    <h3>Acesso Rápido</h3>
+                    <h3>
+                        Acesso Rápido
+                    </h3>
 
                     <button
-
+                        type="button"
                         onClick={() =>
-
                             navigate("/admin/students")
-
                         }
-
                     >
-
                         Estudantes
-
                     </button>
 
                     <button
-
+                        type="button"
                         onClick={() =>
-
                             navigate("/admin/employees")
-
                         }
-
                     >
-
                         Funcionários
-
                     </button>
 
                     <button
-
+                        type="button"
                         onClick={() =>
-
                             navigate("/admin/documents")
-
                         }
-
                     >
-
                         Documentos
-
                     </button>
 
                     <button
-
+                        type="button"
                         onClick={() =>
-
                             navigate("/admin/payments")
-
                         }
-
                     >
-
                         Pagamentos
-
                     </button>
 
                     <button
-
+                        type="button"
                         onClick={() =>
-
                             navigate("/admin/reports")
-
                         }
-
                     >
-
                         Relatórios
-
                     </button>
 
                 </div>
@@ -322,7 +298,5 @@ export default function AdminDashboard() {
             </div>
 
         </>
-
     );
-
 }

@@ -15,72 +15,16 @@ class DepartmentSeeder extends Seeder
         $departments = [
 
             [
-                'name' => 'Reitoria',
-                'code' => 'REIT',
-                'description' => 'Órgão máximo de gestão da instituição.',
-                'active' => true,
-            ],
-
-            [
                 'name' => 'Secretaria Académica',
                 'code' => 'SAC',
-                'description' => 'Gestão dos processos académicos dos estudantes.',
+                'description' => 'Gestão e processamento das solicitações de documentos académicos.',
                 'active' => true,
             ],
 
             [
-                'name' => 'Recursos Humanos',
-                'code' => 'RH',
-                'description' => 'Gestão dos funcionários e colaboradores.',
-                'active' => true,
-            ],
-
-            [
-                'name' => 'Financeiro',
+                'name' => 'Departamento Financeiro',
                 'code' => 'FIN',
-                'description' => 'Gestão financeira da instituição.',
-                'active' => true,
-            ],
-
-            [
-                'name' => 'Tecnologias de Informação',
-                'code' => 'TI',
-                'description' => 'Gestão da infraestrutura tecnológica.',
-                'active' => true,
-            ],
-
-            [
-                'name' => 'Biblioteca',
-                'code' => 'BIB',
-                'description' => 'Serviços de biblioteca e documentação.',
-                'active' => true,
-            ],
-
-            [
-                'name' => 'Assuntos Estudantis',
-                'code' => 'AE',
-                'description' => 'Acompanhamento e apoio aos estudantes.',
-                'active' => true,
-            ],
-
-            [
-                'name' => 'Património',
-                'code' => 'PAT',
-                'description' => 'Gestão do património institucional.',
-                'active' => true,
-            ],
-
-            [
-                'name' => 'Investigação Científica',
-                'code' => 'IC',
-                'description' => 'Coordenação das actividades de investigação.',
-                'active' => true,
-            ],
-
-            [
-                'name' => 'Administração',
-                'code' => 'ADM',
-                'description' => 'Serviços administrativos gerais.',
+                'description' => 'Gestão e acompanhamento dos pagamentos associados aos serviços académicos.',
                 'active' => true,
             ],
 
@@ -89,11 +33,8 @@ class DepartmentSeeder extends Seeder
         foreach ($departments as $department) {
 
             Department::updateOrCreate(
-
                 ['code' => $department['code']],
-
                 $department
-
             );
 
         }

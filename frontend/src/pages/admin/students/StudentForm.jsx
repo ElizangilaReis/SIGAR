@@ -33,6 +33,8 @@ export default function StudentForm({
 
     });
 
+    const [systemMessage, setSystemMessage] = useState("");
+
     useEffect(() => {
 
         if (student) {
@@ -89,11 +91,15 @@ export default function StudentForm({
 
         }
 
+        setSystemMessage("");
+
     }, [student]);
 
-    function handleChange(e){
+    function handleChange(e) {
 
         const { name, value } = e.target;
+
+        setSystemMessage("");
 
         setForm(prev => ({
 
@@ -107,22 +113,56 @@ export default function StudentForm({
 
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
 
         e.preventDefault();
 
-        onSubmit(form);
+        setSystemMessage("");
+
+        try {
+
+            await onSubmit(form);
+
+        } catch (error) {
+
+            console.error(error);
+
+            const errors = error.response?.data?.errors;
+
+            if (errors) {
+
+                const messages = Object.values(errors)
+                    .flat()
+                    .join(" ");
+
+                setSystemMessage(messages);
+
+            } else if (error.response?.data?.message) {
+
+                setSystemMessage(error.response.data.message);
+
+            } else {
+
+                setSystemMessage(
+                    "Não foi possível guardar o estudante."
+                );
+
+            }
+
+        }
 
     }
 
     const filteredCourses = courses.filter(
 
-        course => Number(course.faculty_id) === Number(form.faculty)
+        course =>
+            Number(course.faculty_id) === Number(form.faculty)
 
     );
+
     console.log(form);
 
-    return(
+    return (
 
         <Modal
 
@@ -150,13 +190,13 @@ export default function StudentForm({
 
                             loading
 
-                            ?
+                                ?
 
-                            "Guardar..."
+                                "Guardar..."
 
-                            :
+                                :
 
-                            "Guardar"
+                                "Guardar"
 
                         }
 
@@ -167,6 +207,49 @@ export default function StudentForm({
             }
 
         >
+
+            {systemMessage && (
+
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "12px",
+                        marginBottom: "18px",
+                        padding: "12px 14px",
+                        backgroundColor: "#fef2f2",
+                        border: "1px solid #fecaca",
+                        borderRadius: "8px",
+                        color: "#991b1b",
+                        fontSize: "14px",
+                        lineHeight: "1.4"
+                    }}
+                >
+
+                    <span>
+                        {systemMessage}
+                    </span>
+
+                    <button
+                        type="button"
+                        onClick={() => setSystemMessage("")}
+                        style={{
+                            border: "none",
+                            background: "transparent",
+                            color: "#991b1b",
+                            fontSize: "20px",
+                            cursor: "pointer",
+                            padding: "0 4px"
+                        }}
+                        aria-label="Fechar mensagem"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            )}
 
             <form>
 
@@ -221,15 +304,21 @@ export default function StudentForm({
 
                     options={[
 
-                        {value:"Masculino",label:"Masculino"},
+                        {
+                            value: "Masculino",
+                            label: "Masculino"
+                        },
 
-                        {value:"Feminino",label:"Feminino"}
+                        {
+                            value: "Feminino",
+                            label: "Feminino"
+                        }
 
                     ]}
 
                 />
 
-              <Select
+                <Select
                     label="Faculdade"
                     name="faculty"
                     value={form.faculty}
@@ -253,6 +342,7 @@ export default function StudentForm({
                         value: course.id,
                         label: course.name
                     }))}
+
                 />
 
                 <Select
@@ -267,9 +357,15 @@ export default function StudentForm({
 
                     options={[
 
-                        {value:"Activo",label:"Activo"},
+                        {
+                            value: "Activo",
+                            label: "Activo"
+                        },
 
-                        {value:"Inactivo",label:"Inactivo"}
+                        {
+                            value: "Inactivo",
+                            label: "Inactivo"
+                        }
 
                     ]}
 

@@ -1,0 +1,131 @@
+.employee-reports {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.reports-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.reports-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.reports-table-card {
+    width: 100%;
+    margin-top: 32px;
+    box-sizing: border-box;
+}
+
+.reports-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.reports-table-header h3 {
+    margin: 0;
+}
+
+.reports-table-header p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.reports-count {
+    color: #64748b;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.reports-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.reports-empty {
+    padding: 32px 16px;
+    text-align: center;
+    color: #64748b;
+}
+
+/* Tablet */
+@media (max-width: 1000px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .reports-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .reports-actions {
+        justify-content: flex-start;
+    }
+}
+
+/* Telemóvel */
+@media (max-width: 600px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .reports-header {
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .reports-header h1 {
+        font-size: 24px;
+    }
+
+    .reports-header p {
+        font-size: 14px;
+    }
+
+    .reports-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .reports-actions .btn {
+        width: 100%;
+    }
+
+    .reports-table-card {
+        margin-top: 22px;
+    }
+
+    .reports-table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .reports-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+}

@@ -11,7 +11,6 @@ export default function EmployeeLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-
         <div className="layout">
 
             <EmployeeSidebar
@@ -34,7 +33,5 @@ export default function EmployeeLayout() {
             </div>
 
         </div>
-
     );
-
 }

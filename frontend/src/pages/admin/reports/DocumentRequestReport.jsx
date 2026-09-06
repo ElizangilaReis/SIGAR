@@ -9,7 +9,6 @@ import Loading from "../../../components/common/Loading/Loading";
 import Button from "../../../components/common/Button/Button";
 
 export default function DocumentRequestReport() {
-
     const [requests, setRequests] = useState([]);
 
     const [loading, setLoading] = useState(true);
@@ -18,194 +17,230 @@ export default function DocumentRequestReport() {
 
     const [page, setPage] = useState(1);
 
+    const [exporting, setExporting] = useState(false);
+
     const perPage = 10;
 
     useEffect(() => {
-
         loadRequests();
-
     }, []);
 
     async function loadRequests() {
-
         try {
-
             setLoading(true);
 
             const data = await reportService.documentRequests();
 
-            setRequests(data);
+            setRequests(
+                Array.isArray(data)
+                    ? data
+                    : []
+            );
+
+        } catch (error) {
+            console.error(
+                "Erro ao carregar relatório de pedidos:",
+                error
+            );
+
+            setRequests([]);
 
         } finally {
-
             setLoading(false);
-
         }
-
     }
 
     const filtered = useMemo(() => {
+        if (!search.trim()) {
+            return requests;
+        }
 
-        if (!search) return requests;
+        const value = search
+            .toLowerCase()
+            .trim();
 
-        const value = search.toLowerCase();
+        return requests.filter((request) => {
+            const reference =
+                request.reference?.toLowerCase() || "";
 
-        return requests.filter(request =>
+            const studentName =
+                request.student?.user?.name?.toLowerCase() || "";
 
-            request.reference?.toLowerCase().includes(value) ||
+            const documentName =
+                request.documentType?.name?.toLowerCase() ||
+                request.document_type?.name?.toLowerCase() ||
+                "";
 
-            request.student?.user?.name?.toLowerCase().includes(value) ||
+            const status =
+                request.status?.toLowerCase() || "";
 
-            request.document_type?.name?.toLowerCase().includes(value) ||
-
-            request.status?.toLowerCase().includes(value)
-
-        );
+            return (
+                reference.includes(value) ||
+                studentName.includes(value) ||
+                documentName.includes(value) ||
+                status.includes(value)
+            );
+        });
 
     }, [requests, search]);
 
+    useEffect(() => {
+        setPage(1);
+    }, [search]);
+
+    const totalPages =
+        Math.max(
+            1,
+            Math.ceil(filtered.length / perPage)
+        );
+
     const paginated = useMemo(() => {
+        const start =
+            (page - 1) * perPage;
 
-        const start = (page - 1) * perPage;
-
-        return filtered.slice(start, start + perPage);
+        return filtered.slice(
+            start,
+            start + perPage
+        );
 
     }, [filtered, page]);
 
-    if (loading) return <Loading />;
+    async function handleExportPdf() {
+        try {
+            setExporting(true);
+
+            await reportService.exportRequestsPdf();
+
+        } catch (error) {
+            console.error(
+                "Erro ao exportar pedidos em PDF:",
+                error
+            );
+
+        } finally {
+            setExporting(false);
+        }
+    }
+
+    async function handleExportExcel() {
+        try {
+            setExporting(true);
+
+            await reportService.exportRequestsExcel();
+
+        } catch (error) {
+            console.error(
+                "Erro ao exportar pedidos em Excel:",
+                error
+            );
+
+        } finally {
+            setExporting(false);
+        }
+    }
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
-
         <>
-
             <SearchBar
-
                 value={search}
-
                 onChange={setSearch}
-
                 placeholder="Pesquisar pedido..."
-
             />
 
             <div
-
                 style={{
-
                     display: "flex",
-
                     gap: 10,
-
-                    marginBottom: 20
-
+                    marginBottom: 20,
+                    flexWrap: "wrap"
                 }}
-
             >
-
-                <Button>
-
-                    Exportar PDF
-
+                <Button
+                    variant="secondary"
+                    onClick={handleExportPdf}
+                    disabled={exporting}
+                >
+                    {exporting
+                        ? "A exportar..."
+                        : "Exportar PDF"}
                 </Button>
 
-                <Button>
-
-                    Exportar Excel
-
+                <Button
+                    variant="secondary"
+                    onClick={handleExportExcel}
+                    disabled={exporting}
+                >
+                    {exporting
+                        ? "A exportar..."
+                        : "Exportar Excel"}
                 </Button>
-
             </div>
 
             <Table
-
                 columns={[
-
                     "Referência",
-
                     "Estudante",
-
                     "Documento",
-
                     "Estado",
-
                     "Data"
-
                 ]}
-
             >
+                {paginated.map((request) => (
+                    <tr key={request.id}>
+                        <td>
+                            {request.reference || "-"}
+                        </td>
 
-                {
+                        <td>
+                            {request.student?.user?.name || "-"}
+                        </td>
 
-                    paginated.map(request => (
+                        <td>
+                            {
+                                request.documentType?.name ||
+                                request.document_type?.name ||
+                                "-"
+                            }
+                        </td>
 
-                        <tr key={request.id}>
+                        <td>
+                            {request.status || "-"}
+                        </td>
 
-                            <td>
-
-                                {request.reference}
-
-                            </td>
-
-                            <td>
-
-                                {request.student?.user?.name}
-
-                            </td>
-
-                            <td>
-
-                                {request.document_type?.name}
-
-                            </td>
-
-                            <td>
-
-                                {request.status}
-
-                            </td>
-
-                            <td>
-
-                                {
-
+                        <td>
+                            {request.requested_at
+                                ? new Date(
                                     request.requested_at
-
-                                        ?
-
-                                        new Date(
-
-                                            request.requested_at
-
-                                        ).toLocaleDateString("pt-PT")
-
-                                        :
-
-                                        "-"
-
-                                }
-
-                            </td>
-
-                        </tr>
-
-                    ))
-
-                }
-
+                                ).toLocaleDateString("pt-PT")
+                                : "-"}
+                        </td>
+                    </tr>
+                ))}
             </Table>
 
-            <Pagination
+            {filtered.length === 0 && (
+                <p
+                    style={{
+                        textAlign: "center",
+                        marginTop: 20,
+                        color: "#64748b"
+                    }}
+                >
+                    Nenhum pedido encontrado.
+                </p>
+            )}
 
-                currentPage={page}
-
-                totalPages={Math.ceil(filtered.length / perPage)}
-
-                onPageChange={setPage}
-
-            />
-
+            {filtered.length > 0 && (
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                />
+            )}
         </>
-
     );
-
 }

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import employeeService from "../../../services/employeeService";
 import departmentService from "../../../services/departmentService";
 import positionService from "../../../services/positionService";
+
 import PageHeader from "../../../components/admin/PageHeader/PageHeader";
 import Table from "../../../components/common/Table/Table";
 import Button from "../../../components/common/Button/Button";
@@ -20,7 +21,7 @@ export default function Employees() {
     const [departments, setDepartments] = useState([]);
 
     const [positions, setPositions] = useState([]);
-   
+
     const [loading, setLoading] = useState(false);
 
     const [openForm, setOpenForm] = useState(false);
@@ -39,75 +40,88 @@ export default function Employees() {
 
     const perPage = 10;
 
+
     useEffect(() => {
 
         loadData();
 
     }, []);
 
+
     async function loadData() {
 
-      try {
+        try {
 
-          setLoading(true);
+            setLoading(true);
 
-          const [
+            const [
 
-              employeesResponse,
+                employeesResponse,
 
-              departmentsResponse,
+                departmentsResponse,
 
-              positionsResponse
+                positionsResponse
 
-          ] = await Promise.all([
+            ] = await Promise.all([
 
-              employeeService.getAll(),
+                employeeService.getAll(),
 
-              departmentService.getAll(),
+                departmentService.getAll(),
 
-              positionService.getAll()
+                positionService.getAll()
 
-          ]);
+            ]);
 
-          setEmployees(
 
-              employeesResponse.data?.data ??
-              employeesResponse.data ??
-              employeesResponse
+            setEmployees(
 
-          );
+                employeesResponse.data?.data ??
 
-          setDepartments(
+                employeesResponse.data ??
 
-              departmentsResponse.data?.data ??
-              departmentsResponse.data ??
-              departmentsResponse
+                employeesResponse
 
-          );
+            );
 
-          setPositions(
 
-            positionsResponse.data?.data ??
-            positionsResponse.data ??
-            positionsResponse
+            setDepartments(
 
-          );
+                departmentsResponse.data?.data ??
 
-      } catch (error) {
+                departmentsResponse.data ??
 
-          console.error(error);
+                departmentsResponse
 
-          alert("Erro ao carregar os dados.");
+            );
 
-      } finally {
 
-          setLoading(false);
+            setPositions(
 
-      }
+                positionsResponse.data?.data ??
 
-  }
+                positionsResponse.data ??
 
-  async function handleSave(data) {
+                positionsResponse
+
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            // Não usar alert aqui.
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+
+    async function handleSave(data) {
 
     try {
 
@@ -116,11 +130,8 @@ export default function Employees() {
         if (selectedEmployee) {
 
             await employeeService.update(
-
                 selectedEmployee.id,
-
                 data
-
             );
 
         } else {
@@ -139,47 +150,7 @@ export default function Employees() {
 
         console.error(error);
 
-        alert("Erro ao guardar funcionário.");
-
-    } finally {
-
-        setLoading(false);
-
-    }
-
-  }
-
-async function handleStatus() {
-
-    try {
-
-        setLoading(true);
-
-        await employeeService.changeStatus(
-
-            employeeSelected.id,
-
-            employeeAction === "activar"
-
-                ? "Activo"
-
-                : "Inactivo"
-
-        );
-
-        await loadData();
-
-        setConfirmOpen(false);
-
-        setEmployeeSelected(null);
-
-        setEmployeeAction("");
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert("Erro ao actualizar o estado do funcionário.");
+        throw error;
 
     } finally {
 
@@ -190,366 +161,427 @@ async function handleStatus() {
 }
 
 
-const filteredEmployees = useMemo(() => {
+    async function handleStatus() {
 
-    return employees.filter(employee =>
+        try {
 
-        employee.user?.name
-            ?.toLowerCase()
-            .includes(search.toLowerCase())
+            setLoading(true);
 
-        ||
+            await employeeService.changeStatus(
 
-        employee.user?.email
-            ?.toLowerCase()
-            .includes(search.toLowerCase())
+                employeeSelected.id,
 
-        ||
+                employeeAction === "activar"
 
-        employee.user?.bi
-            ?.toLowerCase()
-            .includes(search.toLowerCase())
+                    ? "Activo"
 
-        ||
+                    : "Inactivo"
 
-        employee.position
-            ?.toLowerCase()
-            .includes(search.toLowerCase())
+            );
+
+
+            await loadData();
+
+            setConfirmOpen(false);
+
+            setEmployeeSelected(null);
+
+            setEmployeeAction("");
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            // O ConfirmDialog continua a tratar a confirmação.
+            // Não usar alert aqui.
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+
+    const filteredEmployees = useMemo(() => {
+
+        return employees.filter(employee =>
+
+            employee.user?.name
+
+                ?.toLowerCase()
+
+                .includes(search.toLowerCase())
+
+            ||
+
+            employee.user?.email
+
+                ?.toLowerCase()
+
+                .includes(search.toLowerCase())
+
+            ||
+
+            employee.user?.bi
+
+                ?.toLowerCase()
+
+                .includes(search.toLowerCase())
+
+            ||
+
+            employee.position
+
+                ?.toLowerCase()
+
+                .includes(search.toLowerCase())
+
+        );
+
+    }, [employees, search]);
+
+
+    const totalPages = Math.ceil(
+
+        filteredEmployees.length / perPage
 
     );
 
-}, [employees, search]);
 
-const totalPages = Math.ceil(
+    const paginatedEmployees = useMemo(() => {
 
-    filteredEmployees.length / perPage
+        const start = (page - 1) * perPage;
 
-);
+        return filteredEmployees.slice(
 
-const paginatedEmployees = useMemo(() => {
+            start,
 
-    const start = (page - 1) * perPage;
+            start + perPage
 
-    return filteredEmployees.slice(
+        );
 
-        start,
+    }, [
 
-        start + perPage
+        filteredEmployees,
 
-    );
+        page
 
-}, [
+    ]);
 
-    filteredEmployees,
 
-    page
+    return (
 
-]);
+        <>
 
-return (
+            <PageHeader
 
-    <>
+                title="Gestão de Funcionários"
 
-        <PageHeader
+                subtitle="Gerir funcionários registados."
 
-            title="Gestão de Funcionários"
+                buttonText="Novo Funcionário"
 
-            subtitle="Gerir funcionários registados."
+                onButtonClick={() => {
 
-            buttonText="Novo Funcionário"
+                    setSelectedEmployee(null);
 
-            onButtonClick={() => {
+                    setOpenForm(true);
 
-                setSelectedEmployee(null);
+                }}
 
-                setOpenForm(true);
+            />
 
-            }}
 
-        />
+            <SearchBar
 
-        <SearchBar
+                value={search}
 
-            value={search}
+                onChange={setSearch}
 
-            onChange={setSearch}
+                placeholder="Pesquisar funcionário..."
 
-            placeholder="Pesquisar funcionário..."
+            />
 
-        />
 
-        {
+            {
 
-            loading ? (
+                loading ? (
 
-                <Loading />
+                    <Loading />
 
-            ) : (
+                ) : (
 
-                <Table
+                    <Table
 
-                    columns={[
+                        columns={[
 
-                        "Nº",
+                            "Nº",
 
-                        "Nome",
+                            "Nome",
 
-                        "Email",
+                            "Email",
 
-                        "Departamento",
+                            "Departamento",
 
-                        "Cargo",
+                            "Cargo",
 
-                        "Estado",
+                            "Estado",
 
-                        "Acções"
+                            "Acções"
 
-                    ]}
+                        ]}
 
-                >
+                    >
 
-                    {
+                        {
 
-                        paginatedEmployees.length === 0 ? (
+                            paginatedEmployees.length === 0 ? (
 
-                            <tr>
+                                <tr>
 
-                                <td
+                                    <td
 
-                                    colSpan={7}
+                                        colSpan={7}
 
-                                    style={{
+                                        style={{
 
-                                        textAlign: "center",
+                                            textAlign: "center",
 
-                                        padding: "30px"
+                                            padding: "30px"
 
-                                    }}
+                                        }}
 
-                                >
+                                    >
 
-                                    Nenhum funcionário encontrado.
-
-                                </td>
-
-                            </tr>
-
-                        ) : (
-
-                            paginatedEmployees.map((employee) => (
-
-                                <tr key={employee.id}>
-
-                                    <td>
-
-                                        {employee.employee_number}
-
-                                    </td>
-
-                                    <td>
-
-                                        {employee.user?.name}
-
-                                    </td>
-
-                                    <td>
-
-                                        {employee.user?.email}
-
-                                    </td>
-
-                                    <td>
-
-                                        {employee.department?.name}
-
-                                    </td>
-
-                                    <td>
-
-                                        {employee.position?.name}
-
-                                    </td>
-
-                                    <td>
-
-                                        {employee.user?.status}
-
-                                    </td>
-
-                                    <td>
-
-                                        <div
-
-                                            style={{
-
-                                                display: "flex",
-
-                                                gap: "8px"
-
-                                            }}
-
-                                        >
-
-                                            <Button
-
-                                                variant="secondary"
-
-                                                onClick={() => {
-
-                                                    setSelectedEmployee(employee);
-
-                                                    setOpenForm(true);
-
-                                                }}
-
-                                            >
-
-                                                Editar
-
-                                            </Button>
-
-                                            {
-
-                                                employee.user?.status === "Activo" ? (
-
-                                                    <Button
-
-                                                        variant="danger"
-
-                                                        onClick={() => {
-
-                                                            setEmployeeAction("desactivar");
-
-                                                            setEmployeeSelected(employee);
-
-                                                            setConfirmOpen(true);
-
-                                                        }}
-
-                                                    >
-
-                                                        Desactivar
-
-                                                    </Button>
-
-                                                ) : (
-
-                                                    <Button
-
-                                                        variant="success"
-
-                                                        onClick={() => {
-
-                                                            setEmployeeAction("activar");
-
-                                                            setEmployeeSelected(employee);
-
-                                                            setConfirmOpen(true);
-
-                                                        }}
-
-                                                    >
-
-                                                        Activar
-
-                                                    </Button>
-
-                                                )
-
-                                            }
-
-                                        </div>
+                                        Nenhum funcionário encontrado.
 
                                     </td>
 
                                 </tr>
 
-                            ))
+                            ) : (
 
-                        )
+                                paginatedEmployees.map((employee) => (
 
-                    }
+                                    <tr key={employee.id}>
 
-                </Table>
+                                        <td>
 
-            )
+                                            {employee.employee_number}
 
-        }
+                                        </td>
 
-        <Pagination
+                                        <td>
 
-            currentPage={page}
+                                            {employee.user?.name}
 
-            totalPages={totalPages}
+                                        </td>
 
-            onPageChange={setPage}
+                                        <td>
 
-        />
+                                            {employee.user?.email}
 
-       <EmployeeForm
+                                        </td>
 
-          open={openForm}
+                                        <td>
 
-          onClose={() => {
+                                            {employee.department?.name}
 
-              setOpenForm(false);
+                                        </td>
 
-              setSelectedEmployee(null);
+                                        <td>
 
-          }}
+                                            {employee.position?.name}
 
-          onSubmit={handleSave}
+                                        </td>
 
-          employee={selectedEmployee}
+                                        <td>
 
-          loading={loading}
+                                            {employee.user?.status}
 
-          departments={departments}
+                                        </td>
 
-          positions={positions}
+                                        <td>
 
-      />
+                                            <div
 
-        <ConfirmDialog
+                                                style={{
 
-            open={confirmOpen}
+                                                    display: "flex",
 
-            title={
+                                                    gap: "8px"
 
-                employeeAction === "activar"
+                                                }}
 
-                    ? "Activar Funcionário"
+                                            >
 
-                    : "Desactivar Funcionário"
+                                                <Button
+
+                                                    variant="secondary"
+
+                                                    onClick={() => {
+
+                                                        setSelectedEmployee(employee);
+
+                                                        setOpenForm(true);
+
+                                                    }}
+
+                                                >
+
+                                                    Editar
+
+                                                </Button>
+
+
+                                                {
+
+                                                    employee.user?.status === "Activo" ? (
+
+                                                        <Button
+
+                                                            variant="danger"
+
+                                                            onClick={() => {
+
+                                                                setEmployeeAction("desactivar");
+
+                                                                setEmployeeSelected(employee);
+
+                                                                setConfirmOpen(true);
+
+                                                            }}
+
+                                                        >
+
+                                                            Desactivar
+
+                                                        </Button>
+
+                                                    ) : (
+
+                                                        <Button
+
+                                                            variant="success"
+
+                                                            onClick={() => {
+
+                                                                setEmployeeAction("activar");
+
+                                                                setEmployeeSelected(employee);
+
+                                                                setConfirmOpen(true);
+
+                                                            }}
+
+                                                        >
+
+                                                            Activar
+
+                                                        </Button>
+
+                                                    )
+
+                                                }
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                ))
+
+                            )
+
+                        }
+
+                    </Table>
+
+                )
 
             }
 
-            message={
 
-                employeeAction === "activar"
+            <Pagination
 
-                    ? "Tem a certeza que pretende activar este funcionário?"
+                currentPage={page}
 
-                    : "Tem a certeza que pretende desactivar este funcionário?"
+                totalPages={totalPages}
 
-            }
+                onPageChange={setPage}
 
-            onConfirm={handleStatus}
+            />
 
-            onCancel={() => {
 
-                setConfirmOpen(false);
+            <EmployeeForm
 
-                setEmployeeSelected(null);
+                open={openForm}
 
-                setEmployeeAction("");
+                onClose={() => {
 
-            }}
+                    setOpenForm(false);
 
-        />
+                    setSelectedEmployee(null);
 
-    </>
+                }}
 
-);
+                onSubmit={handleSave}
+
+                employee={selectedEmployee}
+
+                loading={loading}
+
+                departments={departments}
+
+                positions={positions}
+
+            />
+
+
+            <ConfirmDialog
+
+                open={confirmOpen}
+
+                title={
+
+                    employeeAction === "activar"
+
+                        ? "Activar Funcionário"
+
+                        : "Desactivar Funcionário"
+
+                }
+
+                message={
+
+                    employeeAction === "activar"
+
+                        ? "Tem a certeza que pretende activar este funcionário?"
+
+                        : "Tem a certeza que pretende desactivar este funcionário?"
+
+                }
+
+                onConfirm={handleStatus}
+
+                onCancel={() => {
+
+                    setConfirmOpen(false);
+
+                    setEmployeeSelected(null);
+
+                    setEmployeeAction("");
+
+                }}
+
+            />
+
+        </>
+
+    );
 
 }

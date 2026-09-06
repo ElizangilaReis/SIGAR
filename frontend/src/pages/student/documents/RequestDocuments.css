@@ -1,0 +1,111 @@
+.request-documents {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.request-documents .dashboard-header {
+    margin-bottom: 24px;
+}
+
+.request-form {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.request-card {
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 28px;
+    box-sizing: border-box;
+}
+
+.document-info {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.document-info p {
+    margin: 0 0 10px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.document-info p:last-child {
+    margin-bottom: 0;
+}
+
+.request-footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.request-footer .btn {
+    min-width: 220px;
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+
+    .request-form {
+        max-width: 100%;
+    }
+
+    .request-card {
+        padding: 22px;
+        border-radius: 12px;
+    }
+
+    .request-footer {
+        margin-top: 20px;
+    }
+
+    .request-footer .btn {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+
+/* Telemóveis */
+@media (max-width: 480px) {
+
+    .request-card {
+        padding: 18px 16px;
+        border-radius: 10px;
+    }
+
+    .request-documents .dashboard-header {
+        margin-bottom: 18px;
+    }
+
+    .request-documents .dashboard-header h1 {
+        font-size: 24px;
+    }
+
+    .request-documents .dashboard-header p {
+        font-size: 14px;
+    }
+
+    .document-info {
+        padding: 14px;
+    }
+
+    .request-footer {
+        margin-top: 18px;
+    }
+
+    .request-footer .btn {
+        width: 100%;
+        max-width: none;
+    }
+}
